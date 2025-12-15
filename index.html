@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Start Page</title>
+    <title>kklogg's Start Page</title>
     <style>
         :root { --bg: #121212; --card: #1e1e1e; --text: #e0e0e0; --accent: #bb86fc; --danger: #cf6679; }
         body { font-family: 'Segoe UI', sans-serif; background-color: var(--bg); color: var(--text); display: flex; flex-direction: column; align-items: center; min-height: 100vh; margin: 0; padding-top: 60px; }
@@ -86,7 +86,7 @@
     <div class="modal" id="tokenModal">
         <div class="modal-content">
             <h3>🔑 Settings</h3>
-            <p style="font-size:12px; color:#999; margin:0;">Enter GitHub Token to enable sync.</p>
+            <p style="font-size:12px; color:#999; margin:0;">Paste your GitHub Token here.</p>
             <input id="iToken" type="password" placeholder="ghp_xxxxxxxxxxxx">
             <div class="btn-row">
                 <button class="btn-cancel" onclick="closeTokenModal()">Close</button>
@@ -99,11 +99,11 @@
 
     <script>
         // ============================================
-        // 👇 请修改这里为你的【新账号】信息
+        // 👇 这里已经改好了，不要动
         const CONFIG = {
-            owner: '你的新用户名',      // 例如: new-user-007
-            repo: '你的新仓库名',      // 例如: new-user-007.github.io
-            path: 'data.json'        // 不要改这个
+            owner: 'kklogg',             // 你的新用户名
+            repo: 'kklogg.github.io',    // 你的仓库名
+            path: 'data.json'            // 数据库文件名
         };
         // ============================================
 
@@ -112,7 +112,7 @@
 
         // 1. 初始化：加载数据
         async function loadData() {
-            // 加时间戳 ?t=... 强制不缓存，保证多设备同步时看到最新的
+            // 加时间戳 ?t=... 强制不缓存
             const url = `https://api.github.com/repos/${CONFIG.owner}/${CONFIG.repo}/contents/${CONFIG.path}?t=${Date.now()}`;
             try {
                 const res = await fetch(url);
@@ -126,7 +126,7 @@
                 render();
             } catch (e) {
                 console.warn('Load failed:', e);
-                // 如果是404，说明可能是第一次用，或者data.json没建好
+                // 如果是404，渲染空页面
                 if(links.length === 0) render(); 
             }
         }
@@ -148,7 +148,7 @@
 
         // 3. 核心：同步到 GitHub
         async function syncToGithub(newLinks, message) {
-            const token = localStorage.getItem('gh_token_new'); // 使用新的 Key，避免和大号冲突
+            const token = localStorage.getItem('gh_token_kklogg'); // 使用新Key，避免冲突
             if (!token) {
                 alert('请点击右下角⚙️设置 Token 才能同步！');
                 openTokenModal();
@@ -179,7 +179,7 @@
                     render();
                     closeAddModal();
                 } else {
-                    alert('同步失败，请检查 Token 权限');
+                    alert('同步失败！请检查 Token 是否正确，或者仓库里是否有 data.json 文件。');
                 }
             } catch (e) {
                 alert('网络错误');
@@ -214,7 +214,7 @@
         function saveToken() {
             const t = document.getElementById('iToken').value.trim();
             if(t) {
-                localStorage.setItem('gh_token_new', t); // 存入本地
+                localStorage.setItem('gh_token_kklogg', t); // 存入本地
                 alert('Token saved!');
                 closeTokenModal();
                 loadData();
