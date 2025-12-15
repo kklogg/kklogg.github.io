@@ -3,237 +3,154 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>kklogg's Start Page</title>
+    <title>给最可爱的小猪猪 🐷💖</title>
     <style>
-        :root { --bg: #121212; --card: #1e1e1e; --text: #e0e0e0; --accent: #bb86fc; --danger: #cf6679; }
-        body { font-family: 'Segoe UI', sans-serif; background-color: var(--bg); color: var(--text); display: flex; flex-direction: column; align-items: center; min-height: 100vh; margin: 0; padding-top: 60px; }
-        
-        /* 顶部时钟 */
-        #clock { font-size: 4rem; font-weight: bold; margin-bottom: 20px; letter-spacing: 2px; }
-        
-        /* 搜索框 */
-        .search-box { margin-bottom: 40px; }
-        input[type="text"] {
-            padding: 12px 20px; width: 300px; border-radius: 25px; border: none; outline: none;
-            background: #2c2c2c; color: white; text-align: center; font-size: 16px; transition: 0.3s;
+        /* 全局样式 */
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden; /* 防止滚动条出现 */
+            background: linear-gradient(180deg, #ffdde1 0%, #ee9ca7 100%); /* 粉色渐变背景 */
+            font-family: 'Microsoft YaHei', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
         }
-        input[type="text"]:focus { width: 400px; box-shadow: 0 0 10px var(--accent); }
 
-        /* 网格容器 */
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 20px; width: 85%; max-width: 900px; }
-
-        /* 卡片 */
+        /* 中间卡片样式 */
         .card {
-            background: var(--card); padding: 20px 10px; border-radius: 12px;
-            text-align: center; text-decoration: none; color: var(--text);
-            position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center;
-            height: 90px; transition: 0.2s; box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+            background: rgba(255, 255, 255, 0.8);
+            padding: 40px;
+            border-radius: 30px;
+            box-shadow: 0 10px 25px rgba(255, 105, 135, 0.3);
+            text-align: center;
+            z-index: 10; /* 保证卡片在飘落物上方 */
+            backdrop-filter: blur(5px);
+            transition: transform 0.3s ease;
+            cursor: pointer;
         }
-        .card:hover { transform: translateY(-5px); background: #2d2d2d; }
-        .icon { font-size: 28px; margin-bottom: 8px; }
-        .name { font-size: 14px; color: #aaa; }
 
-        /* 按钮 */
-        .del-btn {
-            position: absolute; top: -8px; right: -8px;
-            background: var(--danger); color: white; width: 20px; height: 20px;
-            border-radius: 50%; display: none; align-items: center; justify-content: center;
-            cursor: pointer; border: 2px solid var(--bg); font-weight: bold; font-size: 12px;
+        .card:hover {
+            transform: scale(1.05);
         }
-        .card:hover .del-btn { display: flex; }
 
-        .add-btn { border: 2px dashed #444; background: transparent; cursor: pointer; }
-        .add-btn:hover { border-color: var(--accent); color: var(--accent); }
+        /* 中间的小猪猪头像/Emoji */
+        .piggy-icon {
+            font-size: 80px;
+            display: inline-block;
+            margin-bottom: 20px;
+            animation: bounce 2s infinite;
+        }
 
-        /* 弹窗系统 */
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); align-items: center; justify-content: center; z-index: 1000; }
-        .modal-content { background: #252525; padding: 25px; border-radius: 15px; width: 300px; display: flex; flex-direction: column; gap: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        .modal h3 { margin: 0 0 5px 0; color: white; }
-        .modal input { width: auto; text-align: left; background: #333; margin: 0; }
-        .btn-row { display: flex; justify-content: flex-end; gap: 10px; }
-        button { padding: 8px 15px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; }
-        .btn-save { background: var(--accent); color: #121212; }
-        .btn-cancel { background: #444; color: #ccc; }
+        h1 {
+            color: #ff6b81;
+            margin: 0;
+            font-size: 2em;
+        }
 
-        /* 设置按钮 (右下角齿轮) */
-        #settings-btn { position: fixed; bottom: 20px; right: 20px; font-size: 24px; opacity: 0.3; cursor: pointer; transition: 0.3s; }
-        #settings-btn:hover { opacity: 1; transform: rotate(90deg); }
+        p {
+            color: #ff8fa3;
+            font-size: 1.2em;
+            margin-top: 10px;
+        }
+
+        /* 飘落元素的样式 */
+        .falling-item {
+            position: absolute;
+            top: -50px;
+            user-select: none;
+            pointer-events: none; /* 让鼠标穿透，不影响点击 */
+            animation: fall linear forwards;
+        }
+
+        /* 动画定义 */
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% {transform: translateY(0);}
+            40% {transform: translateY(-20px);}
+            60% {transform: translateY(-10px);}
+        }
+
+        @keyframes fall {
+            to {
+                transform: translateY(110vh) rotate(360deg); /* 掉落到底部并旋转 */
+            }
+        }
+
+        /* 手机端适配 */
+        @media (max-width: 600px) {
+            .card {
+                padding: 20px;
+                width: 80%;
+            }
+            .piggy-icon {
+                font-size: 60px;
+            }
+            h1 {
+                font-size: 1.5em;
+            }
+        }
     </style>
 </head>
 <body>
 
-    <div id="clock">00:00</div>
-
-    <form action="https://www.google.com/search" method="get" target="_blank" class="search-box">
-        <input type="text" name="q" placeholder="Search..." autocomplete="off">
-    </form>
-
-    <div class="grid" id="grid"></div>
-
-    <div class="modal" id="addModal">
-        <div class="modal-content">
-            <h3>Add Link</h3>
-            <input id="iName" placeholder="Name (e.g. arXiv)">
-            <input id="iUrl" placeholder="URL (e.g. arxiv.org)">
-            <input id="iIcon" placeholder="Icon (e.g. 📄)">
-            <div class="btn-row">
-                <button class="btn-cancel" onclick="closeAddModal()">Cancel</button>
-                <button class="btn-save" onclick="commitAdd()">Save</button>
-            </div>
-        </div>
+    <div class="card" onclick="burstHearts()">
+        <div class="piggy-icon">🐷</div>
+        <h1>专属小猪猪的网页</h1>
+        <p>每天都要开开心心哒！💖</p>
+        <p style="font-size: 0.8em; color: #aaa;">(点击小猪有惊喜哦)</p>
     </div>
-
-    <div class="modal" id="tokenModal">
-        <div class="modal-content">
-            <h3>🔑 Settings</h3>
-            <p style="font-size:12px; color:#999; margin:0;">Paste your GitHub Token here.</p>
-            <input id="iToken" type="password" placeholder="ghp_xxxxxxxxxxxx">
-            <div class="btn-row">
-                <button class="btn-cancel" onclick="closeTokenModal()">Close</button>
-                <button class="btn-save" onclick="saveToken()">Save Token</button>
-            </div>
-        </div>
-    </div>
-
-    <div id="settings-btn" onclick="openTokenModal()">⚙️</div>
 
     <script>
-        // ============================================
-        // 👇 这里已经改好了，不要动
-        const CONFIG = {
-            owner: 'kklogg',             // 你的新用户名
-            repo: 'kklogg.github.io',    // 你的仓库名
-            path: 'data.json'            // 数据库文件名
-        };
-        // ============================================
+        // 定义飘落的元素库：可以是Emoji，也可以是图片链接
+        const items = ['❤️', '💖', '🐷', '🐽', '💕', '✨'];
 
-        let links = [];
-        let fileSha = '';
-
-        // 1. 初始化：加载数据
-        async function loadData() {
-            // 加时间戳 ?t=... 强制不缓存
-            const url = `https://api.github.com/repos/${CONFIG.owner}/${CONFIG.repo}/contents/${CONFIG.path}?t=${Date.now()}`;
-            try {
-                const res = await fetch(url);
-                if (!res.ok) throw new Error('File not found');
-                const data = await res.json();
-                
-                // 解码 (支持中文)
-                const content = decodeURIComponent(escape(atob(data.content)));
-                links = JSON.parse(content);
-                fileSha = data.sha;
-                render();
-            } catch (e) {
-                console.warn('Load failed:', e);
-                // 如果是404，渲染空页面
-                if(links.length === 0) render(); 
-            }
-        }
-
-        // 2. 渲染界面
-        function render() {
-            const grid = document.getElementById('grid');
-            grid.innerHTML = '';
-            links.forEach((link, idx) => {
-                grid.innerHTML += `
-                    <a href="${link.url}" class="card">
-                        <div class="del-btn" onclick="deleteLink(event, ${idx})">✕</div>
-                        <div class="icon">${link.icon}</div>
-                        <div class="name">${link.name}</div>
-                    </a>`;
-            });
-            grid.innerHTML += `<div class="card add-btn" onclick="openAddModal()"><div class="icon">➕</div></div>`;
-        }
-
-        // 3. 核心：同步到 GitHub
-        async function syncToGithub(newLinks, message) {
-            const token = localStorage.getItem('gh_token_kklogg'); // 使用新Key，避免冲突
-            if (!token) {
-                alert('请点击右下角⚙️设置 Token 才能同步！');
-                openTokenModal();
-                return;
-            }
-
-            const btn = document.querySelector('.btn-save');
-            const originalText = btn.innerText;
-            btn.innerText = 'Syncing...';
-            btn.disabled = true;
-
-            try {
-                // 编码
-                const content = btoa(unescape(encodeURIComponent(JSON.stringify(newLinks, null, 2))));
-                
-                const body = { message: message, content: content, sha: fileSha };
-                
-                const res = await fetch(`https://api.github.com/repos/${CONFIG.owner}/${CONFIG.repo}/contents/${CONFIG.path}`, {
-                    method: 'PUT',
-                    headers: { 'Authorization': `token ${token}`, 'Content-Type': 'application/json' },
-                    body: JSON.stringify(body)
-                });
-
-                if (res.ok) {
-                    const data = await res.json();
-                    fileSha = data.content.sha;
-                    links = newLinks;
-                    render();
-                    closeAddModal();
-                } else {
-                    alert('同步失败！请检查 Token 是否正确，或者仓库里是否有 data.json 文件。');
-                }
-            } catch (e) {
-                alert('网络错误');
-            } finally {
-                btn.innerText = originalText;
-                btn.disabled = false;
-            }
-        }
-
-        // 4. 逻辑操作
-        function commitAdd() {
-            const name = document.getElementById('iName').value;
-            let url = document.getElementById('iUrl').value;
-            const icon = document.getElementById('iIcon').value || '🔗';
-            if(!name || !url) return;
-            if(!url.startsWith('http')) url = 'https://' + url;
+        // 创建飘落元素的函数
+        function createFallingItem() {
+            const item = document.createElement('div');
+            item.classList.add('falling-item');
             
-            const newLinks = [...links, { name, url, icon }];
-            syncToGithub(newLinks, `Add ${name}`);
+            // 随机选择一个图标
+            item.innerText = items[Math.floor(Math.random() * items.length)];
+
+            // 随机大小 (20px 到 40px)
+            const size = Math.random() * 20 + 20; 
+            item.style.fontSize = size + 'px';
+
+            // 随机水平位置 (0% 到 100%)
+            item.style.left = Math.random() * 100 + 'vw';
+
+            // 随机动画时长 (3s 到 8s)，营造远近感
+            const duration = Math.random() * 5 + 3;
+            item.style.animationDuration = duration + 's';
+
+            // 添加到页面
+            document.body.appendChild(item);
+
+            // 动画结束后移除元素，防止页面卡顿
+            setTimeout(() => {
+                item.remove();
+            }, duration * 1000);
         }
 
-        function deleteLink(e, idx) {
-            e.preventDefault();
-            if(confirm('Delete this link?')) {
-                const newLinks = [...links];
-                newLinks.splice(idx, 1);
-                syncToGithub(newLinks, `Delete index ${idx}`);
+        // 启动自动飘落：每300毫秒生成一个
+        setInterval(createFallingItem, 300);
+
+        // 点击爆发生效函数
+        function burstHearts() {
+            // 瞬间生成15个元素
+            for(let i=0; i<15; i++) {
+                setTimeout(createFallingItem, i * 50);
             }
+            // 让中间的猪猪震动一下
+            const pig = document.querySelector('.piggy-icon');
+            pig.style.transform = "scale(1.5)";
+            setTimeout(() => {
+                pig.style.transform = "scale(1)";
+            }, 200);
         }
-
-        // 5. 辅助功能
-        function saveToken() {
-            const t = document.getElementById('iToken').value.trim();
-            if(t) {
-                localStorage.setItem('gh_token_kklogg', t); // 存入本地
-                alert('Token saved!');
-                closeTokenModal();
-                loadData();
-            }
-        }
-
-        function openAddModal() { document.getElementById('addModal').style.display = 'flex'; }
-        function closeAddModal() { document.getElementById('addModal').style.display = 'none'; }
-        function openTokenModal() { document.getElementById('tokenModal').style.display = 'flex'; }
-        function closeTokenModal() { document.getElementById('tokenModal').style.display = 'none'; }
-
-        // 时钟
-        setInterval(() => {
-            const d = new Date();
-            document.getElementById('clock').innerText = `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
-        }, 1000);
-
-        // 启动
-        loadData();
     </script>
 </body>
 </html>
