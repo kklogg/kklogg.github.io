@@ -3,153 +3,225 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>给最可爱的小猪猪 🐷💖</title>
+    <title>我的猪猪导航 🐷</title>
     <style>
-        /* 全局样式 */
+        /* --- 全局基础样式 --- */
         body, html {
             margin: 0;
             padding: 0;
             width: 100%;
-            height: 100%;
-            overflow: hidden; /* 防止滚动条出现 */
-            background: linear-gradient(180deg, #ffdde1 0%, #ee9ca7 100%); /* 粉色渐变背景 */
+            min-height: 100%;
+            background: linear-gradient(180deg, #ffdde1 0%, #ee9ca7 100%);
             font-family: 'Microsoft YaHei', sans-serif;
             display: flex;
-            justify-content: center;
-            align-items: center;
             flex-direction: column;
+            align-items: center;
         }
 
-        /* 中间卡片样式 */
-        .card {
-            background: rgba(255, 255, 255, 0.8);
-            padding: 40px;
-            border-radius: 30px;
-            box-shadow: 0 10px 25px rgba(255, 105, 135, 0.3);
+        /* --- 头部猪猪区域 --- */
+        .header-section {
             text-align: center;
-            z-index: 10; /* 保证卡片在飘落物上方 */
-            backdrop-filter: blur(5px);
-            transition: transform 0.3s ease;
-            cursor: pointer;
+            margin-top: 60px;
+            margin-bottom: 30px;
+            animation: fadeInDown 1s ease;
         }
 
-        .card:hover {
-            transform: scale(1.05);
-        }
-
-        /* 中间的小猪猪头像/Emoji */
         .piggy-icon {
             font-size: 80px;
             display: inline-block;
-            margin-bottom: 20px;
-            animation: bounce 2s infinite;
+            cursor: pointer;
+            transition: transform 0.2s;
+            text-shadow: 0 5px 15px rgba(255, 105, 135, 0.4);
         }
+        
+        .piggy-icon:active { transform: scale(0.9); }
 
         h1 {
+            color: #fff;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin: 10px 0;
+            font-size: 1.8em;
+        }
+
+        /* --- 搜索框样式 --- */
+        .search-box {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 10px 20px;
+            border-radius: 50px;
+            box-shadow: 0 5px 15px rgba(255, 105, 135, 0.2);
+            display: flex;
+            align-items: center;
+            width: 90%;
+            max-width: 500px;
+            margin-bottom: 40px;
+            transition: box-shadow 0.3s;
+        }
+
+        .search-box:hover, .search-box:focus-within {
+            box-shadow: 0 8px 25px rgba(255, 105, 135, 0.4);
+        }
+
+        .search-input {
+            border: none;
+            background: transparent;
+            outline: none;
+            font-size: 16px;
+            flex-grow: 1;
+            padding: 5px;
+            color: #555;
+        }
+
+        .search-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 20px;
+        }
+
+        /* --- 动态链接网格区域 --- */
+        .links-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+            width: 90%;
+            max-width: 800px;
+            padding-bottom: 50px;
+        }
+
+        /* 单个链接卡片 */
+        .link-card {
+            background: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(10px);
+            padding: 15px 25px;
+            border-radius: 20px;
+            text-decoration: none;
             color: #ff6b81;
-            margin: 0;
-            font-size: 2em;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            animation: popIn 0.5s ease backwards;
         }
 
-        p {
-            color: #ff8fa3;
-            font-size: 1.2em;
-            margin-top: 10px;
+        .link-card:hover {
+            transform: translateY(-5px);
+            background: rgba(255, 255, 255, 0.95);
+            box-shadow: 0 10px 20px rgba(255, 105, 135, 0.3);
         }
 
-        /* 飘落元素的样式 */
+        .link-icon { font-size: 1.5em; }
+
+        /* --- 飘落动画背景 (保留之前的) --- */
         .falling-item {
             position: absolute;
             top: -50px;
             user-select: none;
-            pointer-events: none; /* 让鼠标穿透，不影响点击 */
+            pointer-events: none;
+            z-index: -1;
             animation: fall linear forwards;
         }
 
-        /* 动画定义 */
-        @keyframes bounce {
-            0%, 20%, 50%, 80%, 100% {transform: translateY(0);}
-            40% {transform: translateY(-20px);}
-            60% {transform: translateY(-10px);}
-        }
+        @keyframes fall { to { transform: translateY(110vh) rotate(360deg); } }
+        @keyframes fadeInDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes popIn { from { opacity: 0; transform: scale(0.8); } to { opacity: 1; transform: scale(1); } }
 
-        @keyframes fall {
-            to {
-                transform: translateY(110vh) rotate(360deg); /* 掉落到底部并旋转 */
-            }
-        }
-
-        /* 手机端适配 */
-        @media (max-width: 600px) {
-            .card {
-                padding: 20px;
-                width: 80%;
-            }
-            .piggy-icon {
-                font-size: 60px;
-            }
-            h1 {
-                font-size: 1.5em;
-            }
-        }
     </style>
 </head>
 <body>
 
-    <div class="card" onclick="burstHearts()">
-        <div class="piggy-icon">🐷</div>
-        <h1>专属小猪猪的网页</h1>
-        <p>每天都要开开心心哒！💖</p>
-        <p style="font-size: 0.8em; color: #aaa;">(点击小猪有惊喜哦)</p>
+    <div class="header-section">
+        <div class="piggy-icon" onclick="toggleRain()">🐷</div>
+        <h1>今天也要加油鸭！</h1>
+    </div>
+
+    <form action="https://www.baidu.com/s" target="_blank" class="search-box">
+        <input type="text" name="wd" class="search-input" placeholder="搜一下..." autocomplete="off">
+        <button type="submit" class="search-btn">🔍</button>
+    </form>
+
+    <div id="links-container" class="links-container">
+        <p style="color: #fff; font-size: 0.9em;">正在召唤猪猪飞船...</p>
     </div>
 
     <script>
-        // 定义飘落的元素库：可以是Emoji，也可以是图片链接
-        const items = ['❤️', '💖', '🐷', '🐽', '💕', '✨'];
+        // --- 核心功能：读取 JSON 并渲染 ---
+        async function loadLinks() {
+            try {
+                // 读取同目录下的 data.json
+                const response = await fetch('./data.json'); 
+                if (!response.ok) throw new Error("文件没找到");
+                
+                const links = await response.json();
+                const container = document.getElementById('links-container');
+                
+                // 清空容器（移除“正在加载”）
+                container.innerHTML = '';
 
-        // 创建飘落元素的函数
+                // 遍历数据生成 HTML
+                links.forEach((link, index) => {
+                    const card = document.createElement('a');
+                    card.href = link.url;
+                    card.className = 'link-card';
+                    card.target = '_blank'; // 在新标签页打开
+                    // 添加交错动画延迟，让它们一个个弹出来
+                    card.style.animationDelay = `${index * 0.1}s`;
+
+                    card.innerHTML = `
+                        <span class="link-icon">${link.icon}</span>
+                        <span>${link.name}</span>
+                    `;
+                    container.appendChild(card);
+                });
+
+            } catch (error) {
+                console.error('加载失败:', error);
+                document.getElementById('links-container').innerHTML = 
+                    '<p style="color:white">猪猪迷路了 (无法读取data.json) 🐷💦</p>';
+            }
+        }
+
+        // 页面加载完成后立即执行
+        window.onload = () => {
+            loadLinks();
+            startRain(); // 启动背景飘落
+        };
+
+        // --- 背景飘落特效 (精简版) ---
+        let rainInterval;
+        const items = ['❤️', '✨', '🐷', '🍀', '🌸', '🍬'];
+
         function createFallingItem() {
             const item = document.createElement('div');
             item.classList.add('falling-item');
-            
-            // 随机选择一个图标
             item.innerText = items[Math.floor(Math.random() * items.length)];
-
-            // 随机大小 (20px 到 40px)
-            const size = Math.random() * 20 + 20; 
-            item.style.fontSize = size + 'px';
-
-            // 随机水平位置 (0% 到 100%)
-            item.style.left = Math.random() * 100 + 'vw';
-
-            // 随机动画时长 (3s 到 8s)，营造远近感
-            const duration = Math.random() * 5 + 3;
+            item.style.left = Math.random() * 95 + 'vw';
+            item.style.fontSize = (Math.random() * 15 + 15) + 'px';
+            const duration = Math.random() * 5 + 4;
             item.style.animationDuration = duration + 's';
-
-            // 添加到页面
             document.body.appendChild(item);
-
-            // 动画结束后移除元素，防止页面卡顿
-            setTimeout(() => {
-                item.remove();
-            }, duration * 1000);
+            setTimeout(() => item.remove(), duration * 1000);
         }
 
-        // 启动自动飘落：每300毫秒生成一个
-        setInterval(createFallingItem, 300);
+        function startRain() {
+            rainInterval = setInterval(createFallingItem, 500);
+        }
 
-        // 点击爆发生效函数
-        function burstHearts() {
-            // 瞬间生成15个元素
-            for(let i=0; i<15; i++) {
-                setTimeout(createFallingItem, i * 50);
-            }
-            // 让中间的猪猪震动一下
+        // 点击猪猪切换特效开关
+        function toggleRain() {
             const pig = document.querySelector('.piggy-icon');
-            pig.style.transform = "scale(1.5)";
-            setTimeout(() => {
-                pig.style.transform = "scale(1)";
-            }, 200);
+            pig.style.transform = "scale(1.2) rotate(10deg)";
+            setTimeout(() => pig.style.transform = "scale(1) rotate(0)", 200);
+
+            if (rainInterval) {
+                clearInterval(rainInterval);
+                rainInterval = null;
+                alert("特效已暂停 💤");
+            } else {
+                startRain();
+            }
         }
     </script>
 </body>
