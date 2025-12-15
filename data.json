@@ -1,5 +1,15 @@
 [
     {
+        "name": "google",
+        "url": "https://www.google.com",
+        "icon": "🔍"
+    },
+    {
+        "name": "bing",
+        "url": "https://www.taobao.com",
+        "icon": "🔍"
+    }
+    {
         "name": "GitHub",
         "url": "https://github.com",
         "icon": "🐙"
@@ -15,13 +25,8 @@
         "icon": "🤖"
     },
     {
-        "name": "google",
-        "url": "https://www.google.com",
-        "icon": "🔍"
+        "name": "Gemini",
+        "url": "https://gemini.google.com/",
+        "icon": "🤖"
     },
-    {
-        "name": "bing",
-        "url": "https://www.taobao.com",
-        "icon": "🔍"
-    }
 ]
