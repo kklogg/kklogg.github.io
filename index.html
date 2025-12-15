@@ -7,7 +7,8 @@
     <style>
         /* --- 基础样式 --- */
         html {
-            scrollbar-gutter: stable; /* 防止滚动条抖动 */
+            /* 预留滚动条空间，防止布局跳动 */
+            scrollbar-gutter: stable; 
         }
 
         body, html {
@@ -20,7 +21,7 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            overflow-x: hidden;
+            overflow-x: hidden; /* 禁止横向滚动 */
         }
 
         /* --- 头部 --- */
@@ -156,38 +157,25 @@
         .btn-cancel { background: #eee; color: #666; }
         #status-msg { text-align: center; color: #ff6b81; margin-top: 10px; font-size: 0.9em; min-height: 1.2em;}
 
-        /* --- 特效样式 --- */
+        /* --- 特效样式 (统一使用 Fixed 防止抖动) --- */
         .falling-item { 
-            position: fixed; 
+            position: fixed; /* 核心：固定定位，不占网页空间 */
             top: -50px; 
             user-select: none; 
             pointer-events: none; 
             z-index: -1; 
             animation: fall linear forwards; 
         }
-        
-        .pig-emoji {
-            position: fixed;
-            top: 0; left: 0;
-            pointer-events: none;
-            z-index: 9999;
-            font-size: 24px;
-            animation: pigFloat 1s ease-out forwards;
-        }
 
         @keyframes bounce { 0%, 20%, 50%, 80%, 100% {transform: translateY(0);} 40% {transform: translateY(-20px);} 60% {transform: translateY(-10px);} }
         @keyframes fall { to { transform: translateY(110vh) rotate(360deg); } }
         @keyframes popIn { from { opacity: 0; transform: scale(0.8); } to { opacity: 1; transform: scale(1); } }
-        @keyframes pigFloat {
-            0% { opacity: 1; transform: translateY(0) scale(1); }
-            100% { opacity: 0; transform: translateY(-80px) scale(1.5); }
-        }
     </style>
 </head>
 <body>
 
     <div class="header-section">
-        <div class="piggy-icon" id="piggy" onclick="clickPig(this)">🐷</div>
+        <div class="piggy-icon" id="piggy" onclick="triggerPigRain()">🐷</div>
         <h1>GitHub 猪猪主页</h1>
     </div>
 
@@ -271,17 +259,14 @@
 
             data.forEach((category, index) => {
                 // 1. 渲染网页上的分类区块
-                // 创建标题
                 const title = document.createElement('div');
                 title.className = 'category-title';
                 title.innerText = category.title;
                 container.appendChild(title);
 
-                // 创建网格容器
                 const grid = document.createElement('div');
                 grid.className = 'links-grid';
 
-                // 渲染该分类下的所有链接
                 category.links.forEach(link => {
                     const a = document.createElement('a');
                     a.href = link.url;
@@ -294,14 +279,14 @@
 
                 // 2. 顺便填充弹窗里的下拉菜单
                 const option = document.createElement('option');
-                option.value = index; // 记录是第几个分类
+                option.value = index; 
                 option.innerText = category.title;
                 select.appendChild(option);
             });
         }
 
         async function saveToGithub() {
-            const catIndex = document.getElementById('categorySelect').value; // 获取选中的分类索引
+            const catIndex = document.getElementById('categorySelect').value;
             const name = document.getElementById('siteName').value;
             const url = document.getElementById('siteUrl').value;
             const icon = document.getElementById('siteIcon').value;
@@ -336,17 +321,13 @@
                 
                 const fileData = await getRes.json();
                 
-                // --- 核心修改逻辑 ---
-                // 1. 复制一份当前数据
+                // 核心修改：添加到指定分类
                 const newData = JSON.parse(JSON.stringify(currentData));
-                
-                // 2. 找到对应的分类，把新链接 push 进去
                 if (newData[catIndex]) {
                     newData[catIndex].links.push({ name, url, icon });
                 } else {
                     throw new Error("分类选择出错");
                 }
-                // ------------------
 
                 const content = btoa(unescape(encodeURIComponent(JSON.stringify(newData, null, 4))));
 
@@ -366,8 +347,8 @@
                 if (!putRes.ok) throw new Error("保存失败");
 
                 msgBox.innerText = "保存成功！🎉";
-                currentData = newData; // 更新本地数据
-                renderAll(newData);    // 重新渲染界面
+                currentData = newData; 
+                renderAll(newData);   
                 setTimeout(closeModal, 1500);
 
             } catch (err) {
@@ -394,32 +375,40 @@
             document.getElementById('siteUrl').value = '';
         }
 
-        // 猪猪特效
-        function clickPig(element) {
-            const rect = element.getBoundingClientRect();
-            const emoji = document.createElement('div');
-            emoji.className = 'pig-emoji';
-            emoji.innerText = '🐷'; 
-            
-            const x = rect.left + (rect.width / 2) - 15; 
-            const y = rect.top - 30; 
-
-            emoji.style.left = x + 'px';
-            emoji.style.top = y + 'px';
-            
-            const randomX = (Math.random() - 0.5) * 50; 
-            emoji.style.transform = `translateX(${randomX}px)`;
-
-            document.body.appendChild(emoji);
-            setTimeout(() => { emoji.remove(); }, 1000);
+        // ==========================================
+        // 🌧️ 新增：点击触发“猪猪暴雨”特效
+        // ==========================================
+        function triggerPigRain() {
+            const count = 20; // 想要更密集可以改大这个数字
+            for (let i = 0; i < count; i++) {
+                // 错开时间落下
+                setTimeout(() => {
+                    createSingleFallingPig();
+                }, i * 50); 
+            }
         }
 
-        // 背景雨
-        const items = ['❤️', '✨', '🐷', '🍀', '🌸', '🍬', '☁️'];
-        function createFallingItem() {
+        function createSingleFallingPig() {
+            const item = document.createElement('div');
+            item.classList.add('falling-item'); // 复用 fixed 样式
+            item.innerText = '🐷'; 
+            item.style.left = Math.random() * 95 + 'vw';
+            item.style.fontSize = (Math.random() * 15 + 25) + 'px'; // 稍微大一点
+            const duration = Math.random() * 4 + 3; // 3-7秒下落时间
+            item.style.animationDuration = duration + 's';
+            
+            document.body.appendChild(item);
+            setTimeout(() => item.remove(), duration * 1000);
+        }
+
+        // ==========================================
+        // 🍂 原有：背景持续下落的氛围雨 (不含猪猪)
+        // ==========================================
+        const bgItems = ['❤️', '✨', '🍀', '🌸', '🍬', '☁️']; 
+        function createBackgroundItem() {
             const item = document.createElement('div');
             item.classList.add('falling-item');
-            item.innerText = items[Math.floor(Math.random() * items.length)];
+            item.innerText = bgItems[Math.floor(Math.random() * bgItems.length)];
             item.style.left = Math.random() * 95 + 'vw';
             item.style.fontSize = (Math.random() * 15 + 15) + 'px';
             const duration = Math.random() * 5 + 4;
@@ -427,7 +416,7 @@
             document.body.appendChild(item);
             setTimeout(() => item.remove(), duration * 1000);
         }
-        setInterval(createFallingItem, 400); 
+        setInterval(createBackgroundItem, 500); 
 
         window.onload = loadLinks;
     </script>
