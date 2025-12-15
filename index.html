@@ -351,5 +351,127 @@
 
         window.onload = loadLinks;
     </script>
+    <div id="muyu-container">
+    <div id="float-text-area"></div>
+    
+    <div id="muyu-icon" onclick="knockMuyu()">
+        <svg viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" width="80" height="80">
+            <path d="M512 85.333333c-235.648 0-426.666667 191.018667-426.666667 426.666667 0 235.648 191.018667 426.666667 426.666667 426.666667 235.648 0 426.666667-191.018667 426.666667-426.666667 0-235.648-191.018667-426.666667-426.666667-426.666667z" fill="#333333" opacity="0.1"/>
+            <path d="M176.64 544c0-200.96 142.72-368 326.4-401.92 14.72-2.56 28.16 8.96 28.16 23.68l0 106.88c0 14.08-9.6 26.88-23.68 30.08-106.88 24.32-187.52 119.68-187.52 234.24 0 9.6-6.4 17.28-15.36 19.2l-117.76 25.6c-6.4 1.28-10.24-8.32-10.24-37.76z" fill="#FFFFFF"/>
+            <path d="M569.6 156.8l0 120.96c0 30.72 16.64 59.52 44.16 74.88l112.64 62.72c20.48 11.52 45.44 9.6 64-5.12l99.84-78.72c14.08-10.88 10.24-33.28-6.4-38.4-184.32-58.88-307.84-138.24-314.24-136.32z" fill="#FFD700"/>
+            <path d="M885.12 368.64l-88.96 69.76c-48.64 38.4-117.12 39.04-166.4 1.92L498.56 362.24c-12.16-9.6-29.44-5.76-36.48 8.32-48.64 92.8-76.16 199.68-76.16 312.96 0 176.64 143.36 320 320 320 176.64 0 320-143.36 320-320 0-149.76-103.68-275.2-240.96-314.88z" fill="#FFC107"/>
+            <path d="M291.2 739.2c-23.68 0-42.88-19.2-42.88-42.88 0-23.68 19.2-42.88 42.88-42.88 23.68 0 42.88 19.2 42.88 42.88 0 23.68-19.2 42.88-42.88 42.88z" fill="#333333"/>
+        </svg>
+    </div>
+    
+    <div id="muyu-count">今日功德: 0</div>
+</div>
+
+<style>
+    /* 容器样式：固定在左下角 */
+    #muyu-container {
+        position: fixed;
+        left: 20px;
+        bottom: 20px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        z-index: 1000;
+        user-select: none; /* 防止双击选中文字 */
+        font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
+    }
+
+    /* 木鱼图标样式 */
+    #muyu-icon {
+        cursor: pointer;
+        transition: transform 0.1s;
+        filter: drop-shadow(0 4px 6px rgba(0,0,0,0.3));
+    }
+
+    /* 点击时的缩放动画 */
+    #muyu-icon:active {
+        transform: scale(0.9);
+    }
+
+    /* 计数器文字样式 */
+    #muyu-count {
+        margin-top: 5px;
+        color: #555;
+        font-size: 14px;
+        font-weight: bold;
+        background: rgba(255, 255, 255, 0.8);
+        padding: 4px 8px;
+        border-radius: 10px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    /* “功德+1” 上浮动画的关键帧 */
+    @keyframes floatUp {
+        0% { transform: translateY(0); opacity: 1; }
+        100% { transform: translateY(-40px); opacity: 0; }
+    }
+
+    /* 上浮文字的样式 */
+    .merit-text {
+        position: absolute;
+        top: -20px;
+        color: #ff9800;
+        font-weight: bold;
+        font-size: 16px;
+        pointer-events: none; /* 防止遮挡点击 */
+        animation: floatUp 0.8s ease-out forwards;
+    }
+</style>
+
+<script>
+    // 初始化功德数
+    let meritCount = 0;
+    
+    // 页面加载时读取本地存储
+    window.onload = function() {
+        const savedCount = localStorage.getItem('my_merit_count');
+        if (savedCount) {
+            meritCount = parseInt(savedCount);
+            updateDisplay();
+        }
+    };
+
+    function knockMuyu() {
+        // 1. 增加次数
+        meritCount++;
+        
+        // 2. 更新显示
+        updateDisplay();
+        
+        // 3. 保存到本地存储
+        localStorage.setItem('my_merit_count', meritCount);
+        
+        // 4. 创建“功德+1”漂浮动画
+        showFloatingText();
+    }
+
+    function updateDisplay() {
+        document.getElementById('muyu-count').innerText = '今日功德: ' + meritCount;
+    }
+
+    function showFloatingText() {
+        const container = document.getElementById('muyu-container');
+        const text = document.createElement('div');
+        text.className = 'merit-text';
+        text.innerText = '功德 +1';
+        
+        // 随机一点点水平偏移，让效果更自然
+        const randomLeft = (Math.random() - 0.5) * 20;
+        text.style.left = `calc(50% + ${randomLeft}px)`;
+        text.style.transform = 'translateX(-50%)';
+        
+        container.appendChild(text);
+
+        // 动画结束后移除元素，防止DOM堆积
+        setTimeout(() => {
+            text.remove();
+        }, 800);
+    }
+</script>
 </body>
 </html>
