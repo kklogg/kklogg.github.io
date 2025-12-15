@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>我的猪猪导航 🐷</title>
+    <style>
+        /* --- 基础样式 --- */
+        html {
+            /* 🚀 关键修复1：预留滚动条空间，防止页面内容左右跳动 */
+            scrollbar-gutter: stable; 
+        }
+
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            min-height: 100%;
+            background: linear-gradient(180deg, #ffdde1 0%, #ee9ca7 100%);
+            font-family: 'Microsoft YaHei', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            overflow-x: hidden; /* 禁止横向滚动 */
+        }
+
+        /* --- 头部 --- */
+        .header-section {
+            text-align: center;
+            margin-top: 60px;
+            margin-bottom: 30px;
+            /* 确保头部在特效上面，方便点击 */
+            z-index: 10; 
+            position: relative;
+        }
+        .piggy-icon {
+            font-size: 80px;
+            display: inline-block;
+            cursor: pointer;
+            transition: transform 0.2s;
+            animation: bounce 2s infinite; 
+            user-select: none;
+        }
+        .piggy-icon:active { transform: scale(0.9); }
+        h1 { color: #fff; margin: 10px 0; font-size: 1.8em; text-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+
+        /* --- 搜索框 --- */
+        .search-box {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 10px 20px;
+            border-radius: 50px;
+            box-shadow: 0 5px 15px rgba(255, 105, 135, 0.2);
+            display: flex;
+            align-items: center;
+            width: 90%;
+            max-width: 500px;
+            margin-bottom: 40px;
+            z-index: 10;
+            position: relative;
+        }
+        .search-input { border: none; background: transparent; outline: none; font-size: 16px; flex-grow: 1; padding: 5px; color: #555; }
+        .search-btn { background: none; border: none; cursor: pointer; font-size: 20px; }
+
+        /* --- 链接容器 --- */
+        .links-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+            width: 90%;
+            max-width: 800px;
+            padding-bottom: 100px;
+            z-index: 10;
+            position: relative;
+        }
+        .link-card {
+            background: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(10px);
+            padding: 15px 25px;
+            border-radius: 20px;
+            text-decoration: none;
+            color: #ff6b81;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+        .link-card:hover { transform: translateY(-5px); background: rgba(255, 255, 255, 0.95); }
+        
+        /* --- 添加按钮 (+) --- */
+        .add-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            background: #ff6b81;
+            color: white;
+            border-radius: 50%;
+            font-size: 30px;
+            border: none;
+            box-shadow: 0 5px 15px rgba(255, 107, 129, 0.5);
+            cursor: pointer;
+            transition: transform 0.3s;
+            z-index: 100;
+        }
+        .add-btn:hover { transform: scale(1.1) rotate(90deg); }
+
+        /* --- 弹窗样式 --- */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 200;
+            backdrop-filter: blur(5px);
+        }
+        .modal {
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 400px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            animation: popIn 0.3s ease;
+        }
+        .modal h2 { margin-top: 0; color: #ff6b81; text-align: center; }
+        .input-group { margin-bottom: 15px; }
+        .input-group label { display: block; margin-bottom: 5px; color: #666; font-size: 0.9em; }
+        .input-group input { 
+            width: 100%; padding: 10px; border: 2px solid #eee; border-radius: 10px; box-sizing: border-box; 
+            font-family: inherit;
+        }
+        .input-group input:focus { border-color: #ff6b81; outline: none; }
+        .modal-buttons { display: flex; gap: 10px; margin-top: 20px; }
+        .btn { flex: 1; padding: 10px; border: none; border-radius: 10px; cursor: pointer; font-weight: bold; }
+        .btn-confirm { background: #ff6b81; color: white; }
+        .btn-cancel { background: #eee; color: #666; }
+        #status-msg { text-align: center; color: #ff6b81; margin-top: 10px; font-size: 0.9em; min-height: 1.2em;}
+
+        /* --- 🚀 关键修复2：背景雨改为 fixed 定位 --- */
+        /* 之前是 absolute，掉出屏幕会撑开网页高度，导致滚动条出现 */
+        /* 改为 fixed 后，它只在窗口内显示，绝不撑开网页 */
+        .falling-item { 
+            position: fixed; 
+            top: -50px; 
+            user-select: none; 
+            pointer-events: none; 
+            z-index: -1; 
+            animation: fall linear forwards; 
+        }
+        
+        /* --- 猪猪特效样式 --- */
+        .pig-emoji {
+            position: fixed;
+            top: 0; 
+            left: 0;
+            pointer-events: none;
+            z-index: 9999;
+            font-size: 24px;
+            animation: pigFloat 1s ease-out forwards;
+        }
+
+        @keyframes bounce { 0%, 20%, 50%, 80%, 100% {transform: translateY(0);} 40% {transform: translateY(-20px);} 60% {transform: translateY(-10px);} }
+        @keyframes fall { to { transform: translateY(110vh) rotate(360deg); } }
+        @keyframes popIn { from { opacity: 0; transform: scale(0.8); } to { opacity: 1; transform: scale(1); } }
+        @keyframes pigFloat {
+            0% { opacity: 1; transform: translateY(0) scale(1); }
+            100% { opacity: 0; transform: translateY(-80px) scale(1.5); }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header-section">
+        <div class="piggy-icon" id="piggy" onclick="clickPig(this)">🐷</div>
+        <h1>GitHub 猪猪主页</h1>
+    </div>
+
+    <form action="https://www.baidu.com/s" target="_blank" class="search-box">
+        <input type="text" name="wd" class="search-input" placeholder="搜点什么鸭..." autocomplete="off">
+        <button type="submit" class="search-btn">🔍</button>
+    </form>
+
+    <div id="links-container" class="links-container">
+        <p style="color: #fff;">正在连接猪猪星球...</p>
+    </div>
+
+    <button class="add-btn" onclick="openModal()">+</button>
+
+    <div class="modal-overlay" id="addModal">
+        <div class="modal">
+            <h2>添加新传送门 🚪</h2>
+            <div class="input-group">
+                <label>网站名称</label>
+                <input type="text" id="siteName" placeholder="例如：B站">
+            </div>
+            <div class="input-group">
+                <label>网址 (URL)</label>
+                <input type="text" id="siteUrl" placeholder="https://...">
+            </div>
+            <div class="input-group">
+                <label>图标 (Emoji)</label>
+                <input type="text" id="siteIcon" placeholder="例如：📺" value="✨">
+            </div>
+            <div class="input-group" id="tokenGroup" style="display:none;">
+                <label>GitHub Token (首次需要，仅保存在本地)</label>
+                <input type="password" id="ghToken" placeholder="ghp_xxxx...">
+            </div>
+            <div id="status-msg"></div>
+            <div class="modal-buttons">
+                <button class="btn btn-cancel" onclick="closeModal()">取消</button>
+                <button class="btn btn-confirm" onclick="saveToGithub()">保存 🚀</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ==========================================================
+        // ⚙️ 用户配置区
+        // ==========================================================
+        const CONFIG = {
+            username: 'kklogg',       
+            repo: 'kklogg.github.io', 
+            path: 'data.json'         
+        };
+        // ==========================================================
+
+        let currentData = [];
+
+        async function loadLinks() {
+            try {
+                const res = await fetch(`./${CONFIG.path}?t=${new Date().getTime()}`);
+                if (!res.ok) throw new Error("无法读取 data.json");
+                currentData = await res.json();
+                renderLinks(currentData);
+            } catch (err) {
+                console.error(err);
+                document.getElementById('links-container').innerHTML = `<p style="color:white">读取失败: ${err.message}</p>`;
+            }
+        }
+
+        function renderLinks(links) {
+            const container = document.getElementById('links-container');
+            container.innerHTML = '';
+            links.forEach((link) => {
+                const a = document.createElement('a');
+                a.href = link.url;
+                a.className = 'link-card';
+                a.target = '_blank';
+                a.innerHTML = `<span style="font-size:1.5em">${link.icon}</span><span>${link.name}</span>`;
+                container.appendChild(a);
+            });
+        }
+
+        async function saveToGithub() {
+            const name = document.getElementById('siteName').value;
+            const url = document.getElementById('siteUrl').value;
+            const icon = document.getElementById('siteIcon').value;
+            const msgBox = document.getElementById('status-msg');
+
+            if(!name || !url) {
+                msgBox.innerText = "名字和网址不能为空哦！🐽";
+                return;
+            }
+
+            let token = localStorage.getItem('gh_token');
+            const inputToken = document.getElementById('ghToken').value;
+
+            if (!token) {
+                if (inputToken) {
+                    token = inputToken;
+                    localStorage.setItem('gh_token', token);
+                } else {
+                    document.getElementById('tokenGroup').style.display = 'block';
+                    msgBox.innerText = "第一次需要输入 GitHub Token 才能保存哦！";
+                    return;
+                }
+            }
+
+            msgBox.innerText = "正在呼叫 GitHub 卫星...📡";
+
+            try {
+                const apiUrl = `https://api.github.com/repos/${CONFIG.username}/${CONFIG.repo}/contents/${CONFIG.path}`;
+                const getRes = await fetch(apiUrl, { headers: { 'Authorization': `token ${token}` } });
+                
+                if (!getRes.ok) {
+                    if(getRes.status === 401) {
+                        localStorage.removeItem('gh_token');
+                        throw new Error("Token 无效或过期，请重试");
+                    }
+                    throw new Error("获取文件信息失败");
+                }
+                const fileData = await getRes.json();
+                const currentSha = fileData.sha;
+
+                const newData = [...currentData, { name, url, icon }];
+                const content = btoa(unescape(encodeURIComponent(JSON.stringify(newData, null, 4))));
+
+                const putRes = await fetch(apiUrl, {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': `token ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        message: `feat: Add ${name} via Web`,
+                        content: content,
+                        sha: currentSha
+                    })
+                });
+
+                if (!putRes.ok) throw new Error("保存失败，请检查 Token 权限");
+
+                msgBox.innerText = "保存成功！🎉";
+                currentData = newData;
+                renderLinks(newData);
+                setTimeout(closeModal, 1500);
+
+            } catch (err) {
+                console.error(err);
+                msgBox.innerText = "出错啦: " + err.message;
+                if(err.message.includes("Token")) {
+                    document.getElementById('tokenGroup').style.display = 'block';
+                }
+            }
+        }
+
+        function openModal() {
+            document.getElementById('addModal').style.display = 'flex';
+            document.getElementById('status-msg').innerText = "";
+            if (!localStorage.getItem('gh_token')) {
+                document.getElementById('tokenGroup').style.display = 'block';
+            } else {
+                document.getElementById('tokenGroup').style.display = 'none';
+            }
+        }
+        function closeModal() {
+            document.getElementById('addModal').style.display = 'none';
+            document.getElementById('siteName').value = '';
+            document.getElementById('siteUrl').value = '';
+        }
+
+        // 修复的点击特效函数
+        function clickPig(element) {
+            const rect = element.getBoundingClientRect();
+            const emoji = document.createElement('div');
+            emoji.className = 'pig-emoji';
+            emoji.innerText = '🐷'; 
+            
+            const x = rect.left + (rect.width / 2) - 15; 
+            const y = rect.top - 30; 
+
+            emoji.style.left = x + 'px';
+            emoji.style.top = y + 'px';
+            
+            const randomX = (Math.random() - 0.5) * 50; 
+            emoji.style.transform = `translateX(${randomX}px)`;
+
+            document.body.appendChild(emoji);
+
+            setTimeout(() => { emoji.remove(); }, 1000);
+        }
+
+        // 背景雨
+        const items = ['❤️', '✨', '🐷', '🍀', '🌸', '🍬', '☁️'];
+        function createFallingItem() {
+            const item = document.createElement('div');
+            item.classList.add('falling-item'); // 这里的样式已经改为 fixed 了
+            item.innerText = items[Math.floor(Math.random() * items.length)];
+            item.style.left = Math.random() * 95 + 'vw';
+            item.style.fontSize = (Math.random() * 15 + 15) + 'px';
+            const duration = Math.random() * 5 + 4;
+            item.style.animationDuration = duration + 's';
+            document.body.appendChild(item);
+            setTimeout(() => item.remove(), duration * 1000);
+        }
+        setInterval(createFallingItem, 400); 
+
+        window.onload = loadLinks;
+    </script>
+</body>
+</html>
