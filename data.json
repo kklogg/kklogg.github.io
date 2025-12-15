@@ -17,7 +17,9 @@
         "title": "📚 学习网站",
         "links": [
             { "name": "Bilibili", "url": "https://www.bilibili.com", "icon": "📺" },
-            { "name": "GitHub", "url": "https://github.com", "icon": "🐱" }
+            { "name": "GitHub", "url": "https://github.com", "icon": "🐱" }，
+            { "name": "组会", "url": "https://trustmlatseu.github.io/", "icon": "✨" },
+            { "name": "笔航", "url": "https://appopeDKlCI7439.h5.xiaoeknow.com/giftcode/0075266594470806476", "icon": "✨" }
         ]
     },
     {
