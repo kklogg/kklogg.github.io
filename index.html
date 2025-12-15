@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Start Page</title>
+    <style>
+        :root { --bg: #121212; --card: #1e1e1e; --text: #e0e0e0; --accent: #bb86fc; --danger: #cf6679; }
+        body { font-family: 'Segoe UI', sans-serif; background-color: var(--bg); color: var(--text); display: flex; flex-direction: column; align-items: center; min-height: 100vh; margin: 0; padding-top: 60px; }
+        
+        /* 顶部时钟 */
+        #clock { font-size: 4rem; font-weight: bold; margin-bottom: 20px; letter-spacing: 2px; }
+        
+        /* 搜索框 */
+        .search-box { margin-bottom: 40px; }
+        input[type="text"] {
+            padding: 12px 20px; width: 300px; border-radius: 25px; border: none; outline: none;
+            background: #2c2c2c; color: white; text-align: center; font-size: 16px; transition: 0.3s;
+        }
+        input[type="text"]:focus { width: 400px; box-shadow: 0 0 10px var(--accent); }
+
+        /* 网格容器 */
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 20px; width: 85%; max-width: 900px; }
+
+        /* 卡片 */
+        .card {
+            background: var(--card); padding: 20px 10px; border-radius: 12px;
+            text-align: center; text-decoration: none; color: var(--text);
+            position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center;
+            height: 90px; transition: 0.2s; box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+        }
+        .card:hover { transform: translateY(-5px); background: #2d2d2d; }
+        .icon { font-size: 28px; margin-bottom: 8px; }
+        .name { font-size: 14px; color: #aaa; }
+
+        /* 按钮 */
+        .del-btn {
+            position: absolute; top: -8px; right: -8px;
+            background: var(--danger); color: white; width: 20px; height: 20px;
+            border-radius: 50%; display: none; align-items: center; justify-content: center;
+            cursor: pointer; border: 2px solid var(--bg); font-weight: bold; font-size: 12px;
+        }
+        .card:hover .del-btn { display: flex; }
+
+        .add-btn { border: 2px dashed #444; background: transparent; cursor: pointer; }
+        .add-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+        /* 弹窗系统 */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); align-items: center; justify-content: center; z-index: 1000; }
+        .modal-content { background: #252525; padding: 25px; border-radius: 15px; width: 300px; display: flex; flex-direction: column; gap: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .modal h3 { margin: 0 0 5px 0; color: white; }
+        .modal input { width: auto; text-align: left; background: #333; margin: 0; }
+        .btn-row { display: flex; justify-content: flex-end; gap: 10px; }
+        button { padding: 8px 15px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; }
+        .btn-save { background: var(--accent); color: #121212; }
+        .btn-cancel { background: #444; color: #ccc; }
+
+        /* 设置按钮 (右下角齿轮) */
+        #settings-btn { position: fixed; bottom: 20px; right: 20px; font-size: 24px; opacity: 0.3; cursor: pointer; transition: 0.3s; }
+        #settings-btn:hover { opacity: 1; transform: rotate(90deg); }
+    </style>
+</head>
+<body>
+
+    <div id="clock">00:00</div>
+
+    <form action="https://www.google.com/search" method="get" target="_blank" class="search-box">
+        <input type="text" name="q" placeholder="Search..." autocomplete="off">
+    </form>
+
+    <div class="grid" id="grid"></div>
+
+    <div class="modal" id="addModal">
+        <div class="modal-content">
+            <h3>Add Link</h3>
+            <input id="iName" placeholder="Name (e.g. arXiv)">
+            <input id="iUrl" placeholder="URL (e.g. arxiv.org)">
+            <input id="iIcon" placeholder="Icon (e.g. 📄)">
+            <div class="btn-row">
+                <button class="btn-cancel" onclick="closeAddModal()">Cancel</button>
+                <button class="btn-save" onclick="commitAdd()">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="tokenModal">
+        <div class="modal-content">
+            <h3>🔑 Settings</h3>
+            <p style="font-size:12px; color:#999; margin:0;">Enter GitHub Token to enable sync.</p>
+            <input id="iToken" type="password" placeholder="ghp_xxxxxxxxxxxx">
+            <div class="btn-row">
+                <button class="btn-cancel" onclick="closeTokenModal()">Close</button>
+                <button class="btn-save" onclick="saveToken()">Save Token</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="settings-btn" onclick="openTokenModal()">⚙️</div>
+
+    <script>
+        // ============================================
+        // 👇 请修改这里为你的【新账号】信息
+        const CONFIG = {
+            owner: '你的新用户名',      // 例如: new-user-007
+            repo: '你的新仓库名',      // 例如: new-user-007.github.io
+            path: 'data.json'        // 不要改这个
+        };
+        // ============================================
+
+        let links = [];
+        let fileSha = '';
+
+        // 1. 初始化：加载数据
+        async function loadData() {
+            // 加时间戳 ?t=... 强制不缓存，保证多设备同步时看到最新的
+            const url = `https://api.github.com/repos/${CONFIG.owner}/${CONFIG.repo}/contents/${CONFIG.path}?t=${Date.now()}`;
+            try {
+                const res = await fetch(url);
+                if (!res.ok) throw new Error('File not found');
+                const data = await res.json();
+                
+                // 解码 (支持中文)
+                const content = decodeURIComponent(escape(atob(data.content)));
+                links = JSON.parse(content);
+                fileSha = data.sha;
+                render();
+            } catch (e) {
+                console.warn('Load failed:', e);
+                // 如果是404，说明可能是第一次用，或者data.json没建好
+                if(links.length === 0) render(); 
+            }
+        }
+
+        // 2. 渲染界面
+        function render() {
+            const grid = document.getElementById('grid');
+            grid.innerHTML = '';
+            links.forEach((link, idx) => {
+                grid.innerHTML += `
+                    <a href="${link.url}" class="card">
+                        <div class="del-btn" onclick="deleteLink(event, ${idx})">✕</div>
+                        <div class="icon">${link.icon}</div>
+                        <div class="name">${link.name}</div>
+                    </a>`;
+            });
+            grid.innerHTML += `<div class="card add-btn" onclick="openAddModal()"><div class="icon">➕</div></div>`;
+        }
+
+        // 3. 核心：同步到 GitHub
+        async function syncToGithub(newLinks, message) {
+            const token = localStorage.getItem('gh_token_new'); // 使用新的 Key，避免和大号冲突
+            if (!token) {
+                alert('请点击右下角⚙️设置 Token 才能同步！');
+                openTokenModal();
+                return;
+            }
+
+            const btn = document.querySelector('.btn-save');
+            const originalText = btn.innerText;
+            btn.innerText = 'Syncing...';
+            btn.disabled = true;
+
+            try {
+                // 编码
+                const content = btoa(unescape(encodeURIComponent(JSON.stringify(newLinks, null, 2))));
+                
+                const body = { message: message, content: content, sha: fileSha };
+                
+                const res = await fetch(`https://api.github.com/repos/${CONFIG.owner}/${CONFIG.repo}/contents/${CONFIG.path}`, {
+                    method: 'PUT',
+                    headers: { 'Authorization': `token ${token}`, 'Content-Type': 'application/json' },
+                    body: JSON.stringify(body)
+                });
+
+                if (res.ok) {
+                    const data = await res.json();
+                    fileSha = data.content.sha;
+                    links = newLinks;
+                    render();
+                    closeAddModal();
+                } else {
+                    alert('同步失败，请检查 Token 权限');
+                }
+            } catch (e) {
+                alert('网络错误');
+            } finally {
+                btn.innerText = originalText;
+                btn.disabled = false;
+            }
+        }
+
+        // 4. 逻辑操作
+        function commitAdd() {
+            const name = document.getElementById('iName').value;
+            let url = document.getElementById('iUrl').value;
+            const icon = document.getElementById('iIcon').value || '🔗';
+            if(!name || !url) return;
+            if(!url.startsWith('http')) url = 'https://' + url;
+            
+            const newLinks = [...links, { name, url, icon }];
+            syncToGithub(newLinks, `Add ${name}`);
+        }
+
+        function deleteLink(e, idx) {
+            e.preventDefault();
+            if(confirm('Delete this link?')) {
+                const newLinks = [...links];
+                newLinks.splice(idx, 1);
+                syncToGithub(newLinks, `Delete index ${idx}`);
+            }
+        }
+
+        // 5. 辅助功能
+        function saveToken() {
+            const t = document.getElementById('iToken').value.trim();
+            if(t) {
+                localStorage.setItem('gh_token_new', t); // 存入本地
+                alert('Token saved!');
+                closeTokenModal();
+                loadData();
+            }
+        }
+
+        function openAddModal() { document.getElementById('addModal').style.display = 'flex'; }
+        function closeAddModal() { document.getElementById('addModal').style.display = 'none'; }
+        function openTokenModal() { document.getElementById('tokenModal').style.display = 'flex'; }
+        function closeTokenModal() { document.getElementById('tokenModal').style.display = 'none'; }
+
+        // 时钟
+        setInterval(() => {
+            const d = new Date();
+            document.getElementById('clock').innerText = `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
+        }, 1000);
+
+        // 启动
+        loadData();
+    </script>
+</body>
+</html>
