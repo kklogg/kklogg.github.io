@@ -16,6 +16,8 @@
             display: flex;
             flex-direction: column;
             align-items: center;
+            /* 方案1的双重保险：防止横向滚动条 */
+            overflow-x: hidden; 
         }
 
         /* --- 头部 --- */
@@ -29,8 +31,8 @@
             display: inline-block;
             cursor: pointer;
             transition: transform 0.2s;
-            /* 只要动画，去掉暂停逻辑 */
             animation: bounce 2s infinite; 
+            user-select: none; /* 防止双击选中 */
         }
         .piggy-icon:active { transform: scale(0.9); }
         h1 { color: #fff; margin: 10px 0; font-size: 1.8em; text-shadow: 0 2px 4px rgba(0,0,0,0.1); }
@@ -131,17 +133,36 @@
         /* 状态提示 */
         #status-msg { text-align: center; color: #ff6b81; margin-top: 10px; font-size: 0.9em; min-height: 1.2em;}
 
-        /* --- 动画 --- */
+        /* --- 背景雨动画 (保留原版) --- */
         .falling-item { position: absolute; top: -50px; user-select: none; pointer-events: none; z-index: -1; animation: fall linear forwards; }
+        
+        /* --- 🔥 新增：点击猪猪的防抖动特效样式 🔥 --- */
+        .pig-emoji {
+            position: fixed;       /* 核心：固定定位，脱离文档流，不占空间 */
+            top: 0; 
+            left: 0;
+            pointer-events: none;  /* 鼠标穿透 */
+            z-index: 9999;         /* 最顶层 */
+            font-size: 24px;
+            animation: pigFloat 1s ease-out forwards;
+        }
+
+        /* 关键帧动画定义 */
         @keyframes bounce { 0%, 20%, 50%, 80%, 100% {transform: translateY(0);} 40% {transform: translateY(-20px);} 60% {transform: translateY(-10px);} }
         @keyframes fall { to { transform: translateY(110vh) rotate(360deg); } }
         @keyframes popIn { from { opacity: 0; transform: scale(0.8); } to { opacity: 1; transform: scale(1); } }
+        
+        /* 猪猪特效动画 */
+        @keyframes pigFloat {
+            0% { opacity: 1; transform: translateY(0) scale(1); }
+            100% { opacity: 0; transform: translateY(-80px) scale(1.5); }
+        }
     </style>
 </head>
 <body>
 
     <div class="header-section">
-        <div class="piggy-icon" onclick="burstHearts()">🐷</div>
+        <div class="piggy-icon" id="piggy" onclick="clickPig(this)">🐷</div>
         <h1>GitHub 猪猪主页</h1>
     </div>
 
@@ -190,7 +211,7 @@
         // ⚙️ 用户配置区 (请修改这里)
         // ==========================================================
         const CONFIG = {
-            username: 'kklogg',      // 你的 GitHub 用户名
+            username: 'kklogg',       // 你的 GitHub 用户名
             repo: 'kklogg.github.io', // 仓库名称
             path: 'data.json'         // 数据文件路径
         };
@@ -329,7 +350,38 @@
             document.getElementById('siteUrl').value = '';
         }
 
-        // --- 特效 (常开，不暂停) ---
+        // --- 🔥 修复的点击特效函数 (方案1) ---
+        function clickPig(element) {
+            // 1. 获取猪猪的绝对坐标
+            const rect = element.getBoundingClientRect();
+            
+            // 2. 创建 Emoji
+            const emoji = document.createElement('div');
+            emoji.className = 'pig-emoji'; // 使用 fixed 定位的 CSS
+            emoji.innerText = '🐷'; 
+            
+            // 3. 计算坐标 (居中显示在猪猪头顶)
+            const x = rect.left + (rect.width / 2) - 15; 
+            const y = rect.top - 30; 
+
+            // 4. 设置位置
+            emoji.style.left = x + 'px';
+            emoji.style.top = y + 'px';
+            
+            // 5. 随机微调左右位置
+            const randomX = (Math.random() - 0.5) * 50; 
+            emoji.style.transform = `translateX(${randomX}px)`;
+
+            // 6. 放入 body
+            document.body.appendChild(emoji);
+
+            // 7. 清理
+            setTimeout(() => {
+                emoji.remove();
+            }, 1000);
+        }
+
+        // --- 背景持续下落的雨 (保持原样，作为氛围) ---
         const items = ['❤️', '✨', '🐷', '🍀', '🌸', '🍬', '☁️'];
         function createFallingItem() {
             const item = document.createElement('div');
@@ -342,16 +394,10 @@
             document.body.appendChild(item);
             setTimeout(() => item.remove(), duration * 1000);
         }
-        setInterval(createFallingItem, 400); // 持续下落，不设停止开关
-
-        function burstHearts() {
-            // 点击猪猪爆出爱心，但不影响背景雨
-            for(let i=0; i<10; i++) setTimeout(createFallingItem, i*50);
-        }
+        setInterval(createFallingItem, 400); 
 
         window.onload = loadLinks;
     </script>
     
-</script>
 </body>
 </html>
