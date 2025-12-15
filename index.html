@@ -6,6 +6,11 @@
     <title>我的猪猪导航 🐷</title>
     <style>
         /* --- 基础样式 --- */
+        html {
+            /* 🚀 关键修复1：预留滚动条空间，防止页面内容左右跳动 */
+            scrollbar-gutter: stable; 
+        }
+
         body, html {
             margin: 0;
             padding: 0;
@@ -16,8 +21,7 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            /* 方案1的双重保险：防止横向滚动条 */
-            overflow-x: hidden; 
+            overflow-x: hidden; /* 禁止横向滚动 */
         }
 
         /* --- 头部 --- */
@@ -25,6 +29,9 @@
             text-align: center;
             margin-top: 60px;
             margin-bottom: 30px;
+            /* 确保头部在特效上面，方便点击 */
+            z-index: 10; 
+            position: relative;
         }
         .piggy-icon {
             font-size: 80px;
@@ -32,7 +39,7 @@
             cursor: pointer;
             transition: transform 0.2s;
             animation: bounce 2s infinite; 
-            user-select: none; /* 防止双击选中 */
+            user-select: none;
         }
         .piggy-icon:active { transform: scale(0.9); }
         h1 { color: #fff; margin: 10px 0; font-size: 1.8em; text-shadow: 0 2px 4px rgba(0,0,0,0.1); }
@@ -48,6 +55,8 @@
             width: 90%;
             max-width: 500px;
             margin-bottom: 40px;
+            z-index: 10;
+            position: relative;
         }
         .search-input { border: none; background: transparent; outline: none; font-size: 16px; flex-grow: 1; padding: 5px; color: #555; }
         .search-btn { background: none; border: none; cursor: pointer; font-size: 20px; }
@@ -60,7 +69,9 @@
             gap: 20px;
             width: 90%;
             max-width: 800px;
-            padding-bottom: 100px; /* 留出底部空间给加号按钮 */
+            padding-bottom: 100px;
+            z-index: 10;
+            position: relative;
         }
         .link-card {
             background: rgba(255, 255, 255, 0.6);
@@ -75,7 +86,6 @@
             gap: 10px;
             transition: all 0.3s ease;
             box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-            position: relative;
         }
         .link-card:hover { transform: translateY(-5px); background: rgba(255, 255, 255, 0.95); }
         
@@ -129,30 +139,34 @@
         .btn { flex: 1; padding: 10px; border: none; border-radius: 10px; cursor: pointer; font-weight: bold; }
         .btn-confirm { background: #ff6b81; color: white; }
         .btn-cancel { background: #eee; color: #666; }
-        
-        /* 状态提示 */
         #status-msg { text-align: center; color: #ff6b81; margin-top: 10px; font-size: 0.9em; min-height: 1.2em;}
 
-        /* --- 背景雨动画 (保留原版) --- */
-        .falling-item { position: absolute; top: -50px; user-select: none; pointer-events: none; z-index: -1; animation: fall linear forwards; }
+        /* --- 🚀 关键修复2：背景雨改为 fixed 定位 --- */
+        /* 之前是 absolute，掉出屏幕会撑开网页高度，导致滚动条出现 */
+        /* 改为 fixed 后，它只在窗口内显示，绝不撑开网页 */
+        .falling-item { 
+            position: fixed; 
+            top: -50px; 
+            user-select: none; 
+            pointer-events: none; 
+            z-index: -1; 
+            animation: fall linear forwards; 
+        }
         
-        /* --- 🔥 新增：点击猪猪的防抖动特效样式 🔥 --- */
+        /* --- 猪猪特效样式 --- */
         .pig-emoji {
-            position: fixed;       /* 核心：固定定位，脱离文档流，不占空间 */
+            position: fixed;
             top: 0; 
             left: 0;
-            pointer-events: none;  /* 鼠标穿透 */
-            z-index: 9999;         /* 最顶层 */
+            pointer-events: none;
+            z-index: 9999;
             font-size: 24px;
             animation: pigFloat 1s ease-out forwards;
         }
 
-        /* 关键帧动画定义 */
         @keyframes bounce { 0%, 20%, 50%, 80%, 100% {transform: translateY(0);} 40% {transform: translateY(-20px);} 60% {transform: translateY(-10px);} }
         @keyframes fall { to { transform: translateY(110vh) rotate(360deg); } }
         @keyframes popIn { from { opacity: 0; transform: scale(0.8); } to { opacity: 1; transform: scale(1); } }
-        
-        /* 猪猪特效动画 */
         @keyframes pigFloat {
             0% { opacity: 1; transform: translateY(0) scale(1); }
             100% { opacity: 0; transform: translateY(-80px) scale(1.5); }
@@ -196,9 +210,7 @@
                 <label>GitHub Token (首次需要，仅保存在本地)</label>
                 <input type="password" id="ghToken" placeholder="ghp_xxxx...">
             </div>
-            
             <div id="status-msg"></div>
-
             <div class="modal-buttons">
                 <button class="btn btn-cancel" onclick="closeModal()">取消</button>
                 <button class="btn btn-confirm" onclick="saveToGithub()">保存 🚀</button>
@@ -208,22 +220,19 @@
 
     <script>
         // ==========================================================
-        // ⚙️ 用户配置区 (请修改这里)
+        // ⚙️ 用户配置区
         // ==========================================================
         const CONFIG = {
-            username: 'kklogg',       // 你的 GitHub 用户名
-            repo: 'kklogg.github.io', // 仓库名称
-            path: 'data.json'         // 数据文件路径
+            username: 'kklogg',       
+            repo: 'kklogg.github.io', 
+            path: 'data.json'         
         };
         // ==========================================================
 
         let currentData = [];
-        let sha = ''; // GitHub 文件哈希，更新时必须需要
 
-        // 1. 加载数据
         async function loadLinks() {
             try {
-                // 加个时间戳防止缓存
                 const res = await fetch(`./${CONFIG.path}?t=${new Date().getTime()}`);
                 if (!res.ok) throw new Error("无法读取 data.json");
                 currentData = await res.json();
@@ -234,11 +243,10 @@
             }
         }
 
-        // 2. 渲染界面
         function renderLinks(links) {
             const container = document.getElementById('links-container');
             container.innerHTML = '';
-            links.forEach((link, index) => {
+            links.forEach((link) => {
                 const a = document.createElement('a');
                 a.href = link.url;
                 a.className = 'link-card';
@@ -248,7 +256,6 @@
             });
         }
 
-        // 3. GitHub API 操作核心
         async function saveToGithub() {
             const name = document.getElementById('siteName').value;
             const url = document.getElementById('siteUrl').value;
@@ -260,14 +267,13 @@
                 return;
             }
 
-            // 获取 Token (优先从本地读取，如果没有则读取输入框)
             let token = localStorage.getItem('gh_token');
             const inputToken = document.getElementById('ghToken').value;
 
             if (!token) {
                 if (inputToken) {
                     token = inputToken;
-                    localStorage.setItem('gh_token', token); // 保存到本地
+                    localStorage.setItem('gh_token', token);
                 } else {
                     document.getElementById('tokenGroup').style.display = 'block';
                     msgBox.innerText = "第一次需要输入 GitHub Token 才能保存哦！";
@@ -278,15 +284,12 @@
             msgBox.innerText = "正在呼叫 GitHub 卫星...📡";
 
             try {
-                // A. 先获取文件的 SHA (更新文件必须提供原文件的 SHA)
                 const apiUrl = `https://api.github.com/repos/${CONFIG.username}/${CONFIG.repo}/contents/${CONFIG.path}`;
-                const getRes = await fetch(apiUrl, {
-                    headers: { 'Authorization': `token ${token}` }
-                });
+                const getRes = await fetch(apiUrl, { headers: { 'Authorization': `token ${token}` } });
                 
                 if (!getRes.ok) {
                     if(getRes.status === 401) {
-                        localStorage.removeItem('gh_token'); // Token 无效，清除本地
+                        localStorage.removeItem('gh_token');
                         throw new Error("Token 无效或过期，请重试");
                     }
                     throw new Error("获取文件信息失败");
@@ -294,13 +297,9 @@
                 const fileData = await getRes.json();
                 const currentSha = fileData.sha;
 
-                // B. 构造新数据
                 const newData = [...currentData, { name, url, icon }];
-                // GitHub API 要求内容必须是 Base64 编码
-                // 使用 utf-8 转换以支持中文
                 const content = btoa(unescape(encodeURIComponent(JSON.stringify(newData, null, 4))));
 
-                // C. 推送更新
                 const putRes = await fetch(apiUrl, {
                     method: 'PUT',
                     headers: {
@@ -308,7 +307,7 @@
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
-                        message: `feat: Add ${name} via Web`, // Commit 信息
+                        message: `feat: Add ${name} via Web`,
                         content: content,
                         sha: currentSha
                     })
@@ -316,27 +315,23 @@
 
                 if (!putRes.ok) throw new Error("保存失败，请检查 Token 权限");
 
-                // 成功！
                 msgBox.innerText = "保存成功！🎉";
-                currentData = newData; // 更新本地内存数据
-                renderLinks(newData); // 刷新界面
+                currentData = newData;
+                renderLinks(newData);
                 setTimeout(closeModal, 1500);
 
             } catch (err) {
                 console.error(err);
                 msgBox.innerText = "出错啦: " + err.message;
-                // 如果是 Token 错误，显示输入框让用户重新输入
                 if(err.message.includes("Token")) {
                     document.getElementById('tokenGroup').style.display = 'block';
                 }
             }
         }
 
-        // --- 弹窗控制 ---
         function openModal() {
             document.getElementById('addModal').style.display = 'flex';
             document.getElementById('status-msg').innerText = "";
-            // 检查有没有 Token，没有就显示输入框
             if (!localStorage.getItem('gh_token')) {
                 document.getElementById('tokenGroup').style.display = 'block';
             } else {
@@ -345,47 +340,36 @@
         }
         function closeModal() {
             document.getElementById('addModal').style.display = 'none';
-            // 清空输入
             document.getElementById('siteName').value = '';
             document.getElementById('siteUrl').value = '';
         }
 
-        // --- 🔥 修复的点击特效函数 (方案1) ---
+        // 修复的点击特效函数
         function clickPig(element) {
-            // 1. 获取猪猪的绝对坐标
             const rect = element.getBoundingClientRect();
-            
-            // 2. 创建 Emoji
             const emoji = document.createElement('div');
-            emoji.className = 'pig-emoji'; // 使用 fixed 定位的 CSS
+            emoji.className = 'pig-emoji';
             emoji.innerText = '🐷'; 
             
-            // 3. 计算坐标 (居中显示在猪猪头顶)
             const x = rect.left + (rect.width / 2) - 15; 
             const y = rect.top - 30; 
 
-            // 4. 设置位置
             emoji.style.left = x + 'px';
             emoji.style.top = y + 'px';
             
-            // 5. 随机微调左右位置
             const randomX = (Math.random() - 0.5) * 50; 
             emoji.style.transform = `translateX(${randomX}px)`;
 
-            // 6. 放入 body
             document.body.appendChild(emoji);
 
-            // 7. 清理
-            setTimeout(() => {
-                emoji.remove();
-            }, 1000);
+            setTimeout(() => { emoji.remove(); }, 1000);
         }
 
-        // --- 背景持续下落的雨 (保持原样，作为氛围) ---
+        // 背景雨
         const items = ['❤️', '✨', '🐷', '🍀', '🌸', '🍬', '☁️'];
         function createFallingItem() {
             const item = document.createElement('div');
-            item.classList.add('falling-item');
+            item.classList.add('falling-item'); // 这里的样式已经改为 fixed 了
             item.innerText = items[Math.floor(Math.random() * items.length)];
             item.style.left = Math.random() * 95 + 'vw';
             item.style.fontSize = (Math.random() * 15 + 15) + 'px';
@@ -398,6 +382,5 @@
 
         window.onload = loadLinks;
     </script>
-    
 </body>
 </html>
