@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>我的猪猪导航 🐷</title>
     <style>
-        /* --- 全局基础样式 --- */
+        /* --- 基础样式 --- */
         body, html {
             margin: 0;
             padding: 0;
@@ -18,32 +18,24 @@
             align-items: center;
         }
 
-        /* --- 头部猪猪区域 --- */
+        /* --- 头部 --- */
         .header-section {
             text-align: center;
             margin-top: 60px;
             margin-bottom: 30px;
-            animation: fadeInDown 1s ease;
         }
-
         .piggy-icon {
             font-size: 80px;
             display: inline-block;
             cursor: pointer;
             transition: transform 0.2s;
-            text-shadow: 0 5px 15px rgba(255, 105, 135, 0.4);
+            /* 只要动画，去掉暂停逻辑 */
+            animation: bounce 2s infinite; 
         }
-        
         .piggy-icon:active { transform: scale(0.9); }
+        h1 { color: #fff; margin: 10px 0; font-size: 1.8em; text-shadow: 0 2px 4px rgba(0,0,0,0.1); }
 
-        h1 {
-            color: #fff;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            margin: 10px 0;
-            font-size: 1.8em;
-        }
-
-        /* --- 搜索框样式 --- */
+        /* --- 搜索框 --- */
         .search-box {
             background: rgba(255, 255, 255, 0.9);
             padding: 10px 20px;
@@ -54,31 +46,11 @@
             width: 90%;
             max-width: 500px;
             margin-bottom: 40px;
-            transition: box-shadow 0.3s;
         }
+        .search-input { border: none; background: transparent; outline: none; font-size: 16px; flex-grow: 1; padding: 5px; color: #555; }
+        .search-btn { background: none; border: none; cursor: pointer; font-size: 20px; }
 
-        .search-box:hover, .search-box:focus-within {
-            box-shadow: 0 8px 25px rgba(255, 105, 135, 0.4);
-        }
-
-        .search-input {
-            border: none;
-            background: transparent;
-            outline: none;
-            font-size: 16px;
-            flex-grow: 1;
-            padding: 5px;
-            color: #555;
-        }
-
-        .search-btn {
-            background: none;
-            border: none;
-            cursor: pointer;
-            font-size: 20px;
-        }
-
-        /* --- 动态链接网格区域 --- */
+        /* --- 链接容器 --- */
         .links-container {
             display: flex;
             flex-wrap: wrap;
@@ -86,10 +58,8 @@
             gap: 20px;
             width: 90%;
             max-width: 800px;
-            padding-bottom: 50px;
+            padding-bottom: 100px; /* 留出底部空间给加号按钮 */
         }
-
-        /* 单个链接卡片 */
         .link-card {
             background: rgba(255, 255, 255, 0.6);
             backdrop-filter: blur(10px);
@@ -103,96 +73,264 @@
             gap: 10px;
             transition: all 0.3s ease;
             box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-            animation: popIn 0.5s ease backwards;
+            position: relative;
         }
-
-        .link-card:hover {
-            transform: translateY(-5px);
-            background: rgba(255, 255, 255, 0.95);
-            box-shadow: 0 10px 20px rgba(255, 105, 135, 0.3);
+        .link-card:hover { transform: translateY(-5px); background: rgba(255, 255, 255, 0.95); }
+        
+        /* --- 添加按钮 (+) --- */
+        .add-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            background: #ff6b81;
+            color: white;
+            border-radius: 50%;
+            font-size: 30px;
+            border: none;
+            box-shadow: 0 5px 15px rgba(255, 107, 129, 0.5);
+            cursor: pointer;
+            transition: transform 0.3s;
+            z-index: 100;
         }
+        .add-btn:hover { transform: scale(1.1) rotate(90deg); }
 
-        .link-icon { font-size: 1.5em; }
-
-        /* --- 飘落动画背景 (保留之前的) --- */
-        .falling-item {
-            position: absolute;
-            top: -50px;
-            user-select: none;
-            pointer-events: none;
-            z-index: -1;
-            animation: fall linear forwards;
+        /* --- 弹窗样式 --- */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 200;
+            backdrop-filter: blur(5px);
         }
+        .modal {
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 400px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            animation: popIn 0.3s ease;
+        }
+        .modal h2 { margin-top: 0; color: #ff6b81; text-align: center; }
+        .input-group { margin-bottom: 15px; }
+        .input-group label { display: block; margin-bottom: 5px; color: #666; font-size: 0.9em; }
+        .input-group input { 
+            width: 100%; padding: 10px; border: 2px solid #eee; border-radius: 10px; box-sizing: border-box; 
+            font-family: inherit;
+        }
+        .input-group input:focus { border-color: #ff6b81; outline: none; }
+        .modal-buttons { display: flex; gap: 10px; margin-top: 20px; }
+        .btn { flex: 1; padding: 10px; border: none; border-radius: 10px; cursor: pointer; font-weight: bold; }
+        .btn-confirm { background: #ff6b81; color: white; }
+        .btn-cancel { background: #eee; color: #666; }
+        
+        /* 状态提示 */
+        #status-msg { text-align: center; color: #ff6b81; margin-top: 10px; font-size: 0.9em; min-height: 1.2em;}
 
+        /* --- 动画 --- */
+        .falling-item { position: absolute; top: -50px; user-select: none; pointer-events: none; z-index: -1; animation: fall linear forwards; }
+        @keyframes bounce { 0%, 20%, 50%, 80%, 100% {transform: translateY(0);} 40% {transform: translateY(-20px);} 60% {transform: translateY(-10px);} }
         @keyframes fall { to { transform: translateY(110vh) rotate(360deg); } }
-        @keyframes fadeInDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes popIn { from { opacity: 0; transform: scale(0.8); } to { opacity: 1; transform: scale(1); } }
-
     </style>
 </head>
 <body>
 
     <div class="header-section">
-        <div class="piggy-icon" onclick="toggleRain()">🐷</div>
-        <h1>今天也要加油鸭！</h1>
+        <div class="piggy-icon" onclick="burstHearts()">🐷</div>
+        <h1>GitHub 猪猪主页</h1>
     </div>
 
     <form action="https://www.baidu.com/s" target="_blank" class="search-box">
-        <input type="text" name="wd" class="search-input" placeholder="搜一下..." autocomplete="off">
+        <input type="text" name="wd" class="search-input" placeholder="搜点什么鸭..." autocomplete="off">
         <button type="submit" class="search-btn">🔍</button>
     </form>
 
     <div id="links-container" class="links-container">
-        <p style="color: #fff; font-size: 0.9em;">正在召唤猪猪飞船...</p>
+        <p style="color: #fff;">正在连接猪猪星球...</p>
+    </div>
+
+    <button class="add-btn" onclick="openModal()">+</button>
+
+    <div class="modal-overlay" id="addModal">
+        <div class="modal">
+            <h2>添加新传送门 🚪</h2>
+            <div class="input-group">
+                <label>网站名称</label>
+                <input type="text" id="siteName" placeholder="例如：B站">
+            </div>
+            <div class="input-group">
+                <label>网址 (URL)</label>
+                <input type="text" id="siteUrl" placeholder="https://...">
+            </div>
+            <div class="input-group">
+                <label>图标 (Emoji)</label>
+                <input type="text" id="siteIcon" placeholder="例如：📺" value="✨">
+            </div>
+            <div class="input-group" id="tokenGroup" style="display:none;">
+                <label>GitHub Token (首次需要，仅保存在本地)</label>
+                <input type="password" id="ghToken" placeholder="ghp_xxxx...">
+            </div>
+            
+            <div id="status-msg"></div>
+
+            <div class="modal-buttons">
+                <button class="btn btn-cancel" onclick="closeModal()">取消</button>
+                <button class="btn btn-confirm" onclick="saveToGithub()">保存 🚀</button>
+            </div>
+        </div>
     </div>
 
     <script>
-        // --- 核心功能：读取 JSON 并渲染 ---
+        // ==========================================================
+        // ⚙️ 用户配置区 (请修改这里)
+        // ==========================================================
+        const CONFIG = {
+            username: 'kklogg',      // 你的 GitHub 用户名
+            repo: 'kklogg.github.io', // 仓库名称
+            path: 'data.json'         // 数据文件路径
+        };
+        // ==========================================================
+
+        let currentData = [];
+        let sha = ''; // GitHub 文件哈希，更新时必须需要
+
+        // 1. 加载数据
         async function loadLinks() {
             try {
-                // 读取同目录下的 data.json
-                const response = await fetch('./data.json'); 
-                if (!response.ok) throw new Error("文件没找到");
-                
-                const links = await response.json();
-                const container = document.getElementById('links-container');
-                
-                // 清空容器（移除“正在加载”）
-                container.innerHTML = '';
-
-                // 遍历数据生成 HTML
-                links.forEach((link, index) => {
-                    const card = document.createElement('a');
-                    card.href = link.url;
-                    card.className = 'link-card';
-                    card.target = '_blank'; // 在新标签页打开
-                    // 添加交错动画延迟，让它们一个个弹出来
-                    card.style.animationDelay = `${index * 0.1}s`;
-
-                    card.innerHTML = `
-                        <span class="link-icon">${link.icon}</span>
-                        <span>${link.name}</span>
-                    `;
-                    container.appendChild(card);
-                });
-
-            } catch (error) {
-                console.error('加载失败:', error);
-                document.getElementById('links-container').innerHTML = 
-                    '<p style="color:white">猪猪迷路了 (无法读取data.json) 🐷💦</p>';
+                // 加个时间戳防止缓存
+                const res = await fetch(`./${CONFIG.path}?t=${new Date().getTime()}`);
+                if (!res.ok) throw new Error("无法读取 data.json");
+                currentData = await res.json();
+                renderLinks(currentData);
+            } catch (err) {
+                console.error(err);
+                document.getElementById('links-container').innerHTML = `<p style="color:white">读取失败: ${err.message}</p>`;
             }
         }
 
-        // 页面加载完成后立即执行
-        window.onload = () => {
-            loadLinks();
-            startRain(); // 启动背景飘落
-        };
+        // 2. 渲染界面
+        function renderLinks(links) {
+            const container = document.getElementById('links-container');
+            container.innerHTML = '';
+            links.forEach((link, index) => {
+                const a = document.createElement('a');
+                a.href = link.url;
+                a.className = 'link-card';
+                a.target = '_blank';
+                a.innerHTML = `<span style="font-size:1.5em">${link.icon}</span><span>${link.name}</span>`;
+                container.appendChild(a);
+            });
+        }
 
-        // --- 背景飘落特效 (精简版) ---
-        let rainInterval;
-        const items = ['❤️', '✨', '🐷', '🍀', '🌸', '🍬'];
+        // 3. GitHub API 操作核心
+        async function saveToGithub() {
+            const name = document.getElementById('siteName').value;
+            const url = document.getElementById('siteUrl').value;
+            const icon = document.getElementById('siteIcon').value;
+            const msgBox = document.getElementById('status-msg');
 
+            if(!name || !url) {
+                msgBox.innerText = "名字和网址不能为空哦！🐽";
+                return;
+            }
+
+            // 获取 Token (优先从本地读取，如果没有则读取输入框)
+            let token = localStorage.getItem('gh_token');
+            const inputToken = document.getElementById('ghToken').value;
+
+            if (!token) {
+                if (inputToken) {
+                    token = inputToken;
+                    localStorage.setItem('gh_token', token); // 保存到本地
+                } else {
+                    document.getElementById('tokenGroup').style.display = 'block';
+                    msgBox.innerText = "第一次需要输入 GitHub Token 才能保存哦！";
+                    return;
+                }
+            }
+
+            msgBox.innerText = "正在呼叫 GitHub 卫星...📡";
+
+            try {
+                // A. 先获取文件的 SHA (更新文件必须提供原文件的 SHA)
+                const apiUrl = `https://api.github.com/repos/${CONFIG.username}/${CONFIG.repo}/contents/${CONFIG.path}`;
+                const getRes = await fetch(apiUrl, {
+                    headers: { 'Authorization': `token ${token}` }
+                });
+                
+                if (!getRes.ok) {
+                    if(getRes.status === 401) {
+                        localStorage.removeItem('gh_token'); // Token 无效，清除本地
+                        throw new Error("Token 无效或过期，请重试");
+                    }
+                    throw new Error("获取文件信息失败");
+                }
+                const fileData = await getRes.json();
+                const currentSha = fileData.sha;
+
+                // B. 构造新数据
+                const newData = [...currentData, { name, url, icon }];
+                // GitHub API 要求内容必须是 Base64 编码
+                // 使用 utf-8 转换以支持中文
+                const content = btoa(unescape(encodeURIComponent(JSON.stringify(newData, null, 4))));
+
+                // C. 推送更新
+                const putRes = await fetch(apiUrl, {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': `token ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        message: `feat: Add ${name} via Web`, // Commit 信息
+                        content: content,
+                        sha: currentSha
+                    })
+                });
+
+                if (!putRes.ok) throw new Error("保存失败，请检查 Token 权限");
+
+                // 成功！
+                msgBox.innerText = "保存成功！🎉";
+                currentData = newData; // 更新本地内存数据
+                renderLinks(newData); // 刷新界面
+                setTimeout(closeModal, 1500);
+
+            } catch (err) {
+                console.error(err);
+                msgBox.innerText = "出错啦: " + err.message;
+                // 如果是 Token 错误，显示输入框让用户重新输入
+                if(err.message.includes("Token")) {
+                    document.getElementById('tokenGroup').style.display = 'block';
+                }
+            }
+        }
+
+        // --- 弹窗控制 ---
+        function openModal() {
+            document.getElementById('addModal').style.display = 'flex';
+            document.getElementById('status-msg').innerText = "";
+            // 检查有没有 Token，没有就显示输入框
+            if (!localStorage.getItem('gh_token')) {
+                document.getElementById('tokenGroup').style.display = 'block';
+            } else {
+                document.getElementById('tokenGroup').style.display = 'none';
+            }
+        }
+        function closeModal() {
+            document.getElementById('addModal').style.display = 'none';
+            // 清空输入
+            document.getElementById('siteName').value = '';
+            document.getElementById('siteUrl').value = '';
+        }
+
+        // --- 特效 (常开，不暂停) ---
+        const items = ['❤️', '✨', '🐷', '🍀', '🌸', '🍬', '☁️'];
         function createFallingItem() {
             const item = document.createElement('div');
             item.classList.add('falling-item');
@@ -204,25 +342,14 @@
             document.body.appendChild(item);
             setTimeout(() => item.remove(), duration * 1000);
         }
+        setInterval(createFallingItem, 400); // 持续下落，不设停止开关
 
-        function startRain() {
-            rainInterval = setInterval(createFallingItem, 500);
+        function burstHearts() {
+            // 点击猪猪爆出爱心，但不影响背景雨
+            for(let i=0; i<10; i++) setTimeout(createFallingItem, i*50);
         }
 
-        // 点击猪猪切换特效开关
-        function toggleRain() {
-            const pig = document.querySelector('.piggy-icon');
-            pig.style.transform = "scale(1.2) rotate(10deg)";
-            setTimeout(() => pig.style.transform = "scale(1) rotate(0)", 200);
-
-            if (rainInterval) {
-                clearInterval(rainInterval);
-                rainInterval = null;
-                alert("特效已暂停 💤");
-            } else {
-                startRain();
-            }
-        }
+        window.onload = loadLinks;
     </script>
 </body>
 </html>
