@@ -3,14 +3,14 @@
         "title": "🔍 搜索引擎",
         "links": [
             {
-                "name": "Google",
+                "name": "google",
                 "url": "https://www.google.com",
-                "icon": "🌏"
+                "icon": "🔍"
             },
             {
-                "name": "百度",
-                "url": "https://www.baidu.com",
-                "icon": "🐾"
+                "name": "bing",
+                "url": "https://www.taobao.com",
+                "icon": "🔍"
             }
         ]
     },
@@ -20,11 +20,16 @@
             {
                 "name": "ChatGPT",
                 "url": "https://chat.openai.com",
-                "icon": "🧠"
+                "icon": "🤖"
             },
             {
                 "name": "Gemini",
-                "url": "https://gemini.google.com",
+                "url": "https://gemini.google.com/",
+                "icon": "🤖"
+            },
+            {
+                "name": "gemini复现",
+                "url": "https://gemini.google.com/app/d6f732fde9386255",
                 "icon": "✨"
             }
         ]
@@ -33,14 +38,19 @@
         "title": "📚 学习网站",
         "links": [
             {
-                "name": "Bilibili",
-                "url": "https://www.bilibili.com",
-                "icon": "📺"
-            },
-            {
                 "name": "GitHub",
                 "url": "https://github.com",
-                "icon": "🐱"
+                "icon": "🐙"
+            },
+            {
+                "name": "组会",
+                "url": "https://trustmlatseu.github.io/",
+                "icon": "✨"
+            },
+            {
+                "name": "笔航",
+                "url": "https://appopeDKlCI7439.h5.xiaoeknow.com/giftcode/0075266594470806476",
+                "icon": "✨"
             }
         ]
     },
@@ -48,9 +58,9 @@
         "title": "🎮 娱乐网站",
         "links": [
             {
-                "name": "4399",
-                "url": "123",
-                "icon": "✨123"
+                "name": "Bilibili",
+                "url": "https://www.bilibili.com",
+                "icon": "📺"
             }
         ]
     }
