@@ -2,28 +2,56 @@
     {
         "title": "🔍 搜索引擎",
         "links": [
-            { "name": "Google", "url": "https://www.google.com", "icon": "🌏" },
-            { "name": "百度", "url": "https://www.baidu.com", "icon": "🐾" }
+            {
+                "name": "Google",
+                "url": "https://www.google.com",
+                "icon": "🌏"
+            },
+            {
+                "name": "百度",
+                "url": "https://www.baidu.com",
+                "icon": "🐾"
+            }
         ]
     },
     {
         "title": "🤖 AI 工具",
         "links": [
-            { "name": "ChatGPT", "url": "https://chat.openai.com", "icon": "🧠" },
-            { "name": "Gemini", "url": "https://gemini.google.com", "icon": "✨" }
+            {
+                "name": "ChatGPT",
+                "url": "https://chat.openai.com",
+                "icon": "🧠"
+            },
+            {
+                "name": "Gemini",
+                "url": "https://gemini.google.com",
+                "icon": "✨"
+            }
         ]
     },
     {
         "title": "📚 学习网站",
         "links": [
-            { "name": "Bilibili", "url": "https://www.bilibili.com", "icon": "📺" },
-            { "name": "GitHub", "url": "https://github.com", "icon": "🐱" }，
-            { "name": "组会", "url": "https://trustmlatseu.github.io/", "icon": "✨" },
-            { "name": "笔航", "url": "https://appopeDKlCI7439.h5.xiaoeknow.com/giftcode/0075266594470806476", "icon": "✨" }
+            {
+                "name": "Bilibili",
+                "url": "https://www.bilibili.com",
+                "icon": "📺"
+            },
+            {
+                "name": "GitHub",
+                "url": "https://github.com",
+                "icon": "🐱"
+            }
         ]
     },
     {
         "title": "🎮 娱乐网站",
-        "links": []
+        "links": [
+            {
+                "name": "4399",
+                "url": "123",
+                "icon": "✨123"
+            }
+        ]
     }
 ]
