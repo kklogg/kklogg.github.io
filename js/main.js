@@ -2,14 +2,40 @@
 const CONFIG = {
     username: 'kklogg',       
     repo: 'kklogg.github.io', 
-    path: 'data.json'         
+    path: 'data.json',
+    // 🔥 在这里设置你们的纪念日
+    startDate: '2022-01-01' 
 };
+
+// ================= 每日暖心文案 (Tech & Sweet) =================
+const sweetSentences = [
+    "今天也是想念 KK 的一天 ☁️",
+    "你是我所有 if-else 里唯一的 return ❤️",
+    "Loading 99%... 对你的爱加载完成 🔋",
+    "在这个 404 的世界里，你是我唯一的 200 OK ✨",
+    "不管是 GAN 还是 Transformer，都算不出我对你的喜欢 🤖",
+    "代码会有 Bug，但爱你是绝对正确的逻辑 ✔️",
+    "今天记得喝水，不要太累哦 🥤",
+    "小猪猪导航，带你去想去的地方 🚀",
+    "遇见你，是我的全局最优解 (Global Optimum) 🌟"
+];
+
+function initDailyQuote() {
+    // 随机选取一句
+    const quote = sweetSentences[Math.floor(Math.random() * sweetSentences.length)];
+    const quoteEl = document.getElementById('daily-quote');
+    if(quoteEl) quoteEl.innerText = quote;
+}
 
 // ================= 时钟与搜索 =================
 function updateClock() {
     const now = new Date();
+    
+    // 1. 基础时间显示
     document.getElementById('clock-time').innerText = now.toTimeString().slice(0, 5);
     document.getElementById('clock-date').innerText = now.toLocaleDateString('zh-CN', { month: 'long', day: 'numeric', weekday: 'long' });
+    
+    // 2. 问候语逻辑
     const hour = now.getHours();
     let greet = "你好呀 🐽";
     if (hour < 6) greet = "夜深了，早点睡 🌙";
@@ -19,6 +45,17 @@ function updateClock() {
     else if (hour < 18) greet = "下午好，摸会鱼 🐟";
     else if (hour < 23) greet = "晚上好，放松下 📺";
     document.getElementById('clock-greet').innerText = greet;
+
+    // 3. 🔥 恋爱计时器逻辑 (Days Together)
+    const start = new Date(CONFIG.startDate);
+    // 计算天数差 (毫秒转天数)
+    const diffTime = Math.abs(now - start);
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
+    
+    const loveEl = document.getElementById('love-counter');
+    if (loveEl) {
+        loveEl.innerHTML = `🐷 <span style="font-size:1.2em;color:#ffeb3b;">${diffDays}</span> Days with KK`;
+    }
 }
 setInterval(updateClock, 1000); updateClock();
 
@@ -37,11 +74,9 @@ function setSearch(type) {
     const engine = engines[type];
     form.action = engine.url; input.name = engine.name; input.placeholder = engine.placeholder;
     
-    // 更新选中状态
     document.querySelectorAll('.search-tab').forEach(el => el.classList.remove('active'));
     const tabs = document.querySelectorAll('.search-tab');
     
-    // 硬编码对应的 Tab 顺序
     if(type === 'baidu') tabs[0].classList.add('active');
     if(type === 'google') tabs[1].classList.add('active');
     if(type === 'bing') tabs[2].classList.add('active');
@@ -50,7 +85,7 @@ function setSearch(type) {
     if(type === 'xhs') tabs[5].classList.add('active');
 }
 
-// ================= 数据加载与渲染 (核心修改) =================
+// ================= 数据加载与渲染 =================
 let currentData = [];
 
 async function loadLinks() {
@@ -65,28 +100,23 @@ async function loadLinks() {
     }
 }
 
-// 🔥 新版渲染函数：支持双栏分流 🔥
 function renderAll(data) {
     const mainContainer = document.getElementById('main-container');
     const select = document.getElementById('categorySelect');
     const gridKK = document.getElementById('grid-kk');
     const gridGG = document.getElementById('grid-gg');
     
-    // 清空所有容器
     mainContainer.innerHTML = ''; select.innerHTML = ''; gridKK.innerHTML = ''; gridGG.innerHTML = '';
 
     data.forEach((category, index) => {
-        // 填充下拉菜单
         const option = document.createElement('option');
         option.value = index; option.innerText = category.title; select.appendChild(option);
 
-        // 判断分类去向
         if (category.isZone === 'kk') {
             renderLinksToContainer(category.links, gridKK);
         } else if (category.isZone === 'gg') {
             renderLinksToContainer(category.links, gridGG);
         } else {
-            // 普通分类渲染到上方
             const title = document.createElement('div');
             title.className = 'category-title';
             title.innerText = category.title;
@@ -99,7 +129,6 @@ function renderAll(data) {
     });
 }
 
-// 通用渲染助手函数
 function renderLinksToContainer(links, containerElement) {
     if (!links || links.length === 0) {
         containerElement.innerHTML = '<div style="color:#fff;opacity:0.6;font-size:0.9em;width:100%;text-align:center;padding:20px 0;">(这里空空如也 🍃)</div>';
@@ -197,4 +226,7 @@ function createBackgroundItem() {
 
 // 初始化
 setInterval(createBackgroundItem, 500); 
-window.onload = loadLinks;
+window.onload = function() {
+    loadLinks();
+    initDailyQuote(); // 🔥 初始化时加载一句情话
+};
