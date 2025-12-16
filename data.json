@@ -73,5 +73,16 @@
                 "icon": "📺"
             }
         ]
+    },
+    {
+        "title": "KK的暂存区", 
+        "isZone": "kk", 
+        "links": []
+    },
+    {
+        "title": "GG的暂存区", 
+        "isZone": "gg", 
+        "links": []
     }
 ]
+
