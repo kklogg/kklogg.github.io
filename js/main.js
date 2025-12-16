@@ -79,13 +79,14 @@ function setSearch(type) {
     document.querySelectorAll('.search-tab').forEach(el => el.classList.remove('active'));
     const tabs = document.querySelectorAll('.search-tab');
     
-    if(type === 'baidu') tabs[0].classList.add('active');
-    if(type === 'google') tabs[1].classList.add('active');
-    if(type === 'bing') tabs[2].classList.add('active');
+    // 🔥 根据你新的 HTML 顺序重新绑定高亮逻辑
+    // 现在的顺序：0:Bing, 1:Perplexity, 2:Google, 3:B站, 4:知乎, 5:小红书
+    if(type === 'bing') tabs[0].classList.add('active');
+    if(type === 'perplexity') tabs[1].classList.add('active');
+    if(type === 'google') tabs[2].classList.add('active');
     if(type === 'bilibili') tabs[3].classList.add('active');
     if(type === 'zhihu') tabs[4].classList.add('active');
     if(type === 'xhs') tabs[5].classList.add('active');
-    if(type === 'perplexity') tabs[6].classList.add('active');
 }
 
 // ================= 数据加载与渲染 =================
