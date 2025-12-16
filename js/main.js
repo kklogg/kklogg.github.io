@@ -26,19 +26,28 @@ const engines = {
     'baidu': { url: 'https://www.baidu.com/s', name: 'wd', placeholder: '百度一下，你就知道...' },
     'google': { url: 'https://www.google.com/search', name: 'q', placeholder: 'Google Search...' },
     'bing': { url: 'https://www.bing.com/search', name: 'q', placeholder: '必应搜索...' },
-    'bilibili': { url: 'https://search.bilibili.com/all', name: 'keyword', placeholder: '搜索哔哩哔哩...' }
+    'bilibili': { url: 'https://search.bilibili.com/all', name: 'keyword', placeholder: '搜索哔哩哔哩...' },
+    'zhihu': { url: 'https://www.zhihu.com/search', name: 'q', placeholder: '有问题，上知乎...' },
+    'xhs': { url: 'https://www.xiaohongshu.com/search_result', name: 'keyword', placeholder: '小红书，标记我的生活...' }
 };
+
 function setSearch(type) {
     const form = document.getElementById('search-form');
     const input = document.getElementById('search-input');
     const engine = engines[type];
     form.action = engine.url; input.name = engine.name; input.placeholder = engine.placeholder;
+    
+    // 更新选中状态
     document.querySelectorAll('.search-tab').forEach(el => el.classList.remove('active'));
     const tabs = document.querySelectorAll('.search-tab');
+    
+    // 硬编码对应的 Tab 顺序
     if(type === 'baidu') tabs[0].classList.add('active');
     if(type === 'google') tabs[1].classList.add('active');
     if(type === 'bing') tabs[2].classList.add('active');
     if(type === 'bilibili') tabs[3].classList.add('active');
+    if(type === 'zhihu') tabs[4].classList.add('active');
+    if(type === 'xhs') tabs[5].classList.add('active');
 }
 
 // ================= 数据加载与渲染 (核心修改) =================
