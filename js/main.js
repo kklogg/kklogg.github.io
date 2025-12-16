@@ -65,7 +65,9 @@ const engines = {
     'bing': { url: 'https://www.bing.com/search', name: 'q', placeholder: '必应搜索...' },
     'bilibili': { url: 'https://search.bilibili.com/all', name: 'keyword', placeholder: '搜索哔哩哔哩...' },
     'zhihu': { url: 'https://www.zhihu.com/search', name: 'q', placeholder: '有问题，上知乎...' },
-    'xhs': { url: 'https://www.xiaohongshu.com/search_result', name: 'keyword', placeholder: '小红书，标记我的生活...' }
+    'xhs': { url: 'https://www.xiaohongshu.com/search_result', name: 'keyword', placeholder: '小红书，标记我的生活...' },
+    // 🔥 新增 Perplexity 配置
+    'perplexity': { url: 'https://www.perplexity.ai/search', name: 'q', placeholder: 'Perplexity 智能搜索...' }
 };
 
 function setSearch(type) {
@@ -77,12 +79,15 @@ function setSearch(type) {
     document.querySelectorAll('.search-tab').forEach(el => el.classList.remove('active'));
     const tabs = document.querySelectorAll('.search-tab');
     
+    // 硬编码索引逻辑
     if(type === 'baidu') tabs[0].classList.add('active');
     if(type === 'google') tabs[1].classList.add('active');
     if(type === 'bing') tabs[2].classList.add('active');
     if(type === 'bilibili') tabs[3].classList.add('active');
     if(type === 'zhihu') tabs[4].classList.add('active');
     if(type === 'xhs') tabs[5].classList.add('active');
+    // 🔥 新增 Perplexity 高亮 (它是第7个按钮，索引是6)
+    if(type === 'perplexity') tabs[6].classList.add('active');
 }
 
 // ================= 数据加载与渲染 =================
@@ -106,7 +111,11 @@ function renderAll(data) {
     const gridKK = document.getElementById('grid-kk');
     const gridGG = document.getElementById('grid-gg');
     
-    mainContainer.innerHTML = ''; select.innerHTML = ''; gridKK.innerHTML = ''; gridGG.innerHTML = '';
+    // 安全检查，防止 DOM 未加载时报错
+    if(mainContainer) mainContainer.innerHTML = ''; 
+    if(select) select.innerHTML = ''; 
+    if(gridKK) gridKK.innerHTML = ''; 
+    if(gridGG) gridGG.innerHTML = '';
 
     data.forEach((category, index) => {
         const option = document.createElement('option');
@@ -130,6 +139,7 @@ function renderAll(data) {
 }
 
 function renderLinksToContainer(links, containerElement) {
+    if (!containerElement) return;
     if (!links || links.length === 0) {
         containerElement.innerHTML = '<div style="color:#fff;opacity:0.6;font-size:0.9em;width:100%;text-align:center;padding:20px 0;">(这里空空如也 🍃)</div>';
         return;
@@ -228,5 +238,4 @@ function createBackgroundItem() {
 setInterval(createBackgroundItem, 500); 
 window.onload = function() {
     loadLinks();
-    initDailyQuote(); // 🔥 初始化时加载一句情话
-};
+    initDailyQuote(); 
