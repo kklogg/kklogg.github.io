@@ -10,18 +10,44 @@
 
     <div class="header-section">
         <div class="piggy-icon" id="piggy" onclick="triggerPigRain()">🐷</div>
-        <h1>GitHub 猪猪主页</h1>
+        <div class="clock-container">
+            <div class="time-text" id="clock-time">00:00</div>
+            <div class="date-text" id="clock-date">Loading...</div>
+            <div class="greeting-text" id="clock-greet">你好呀 🐽</div>
+        </div>
     </div>
 
-    <form action="https://www.baidu.com/s" target="_blank" class="search-box">
-        <input type="text" name="wd" class="search-input" placeholder="搜点什么鸭..." autocomplete="off">
-        <button type="submit" class="search-btn">🔍</button>
-    </form>
+    <div class="search-wrapper">
+        <div class="search-tabs">
+            <div class="search-tab active" onclick="setSearch('baidu')" title="百度">🐾</div>
+            <div class="search-tab" onclick="setSearch('google')" title="Google">🌏</div>
+            <div class="search-tab" onclick="setSearch('bing')" title="Bing">🪁</div>
+            <div class="search-tab" onclick="setSearch('bilibili')" title="B站">📺</div>
+        </div>
+        
+        <form id="search-form" action="https://www.baidu.com/s" target="_blank" class="search-box">
+            <input type="text" id="search-input" name="wd" class="search-input" placeholder="百度一下，你就知道..." autocomplete="off">
+            <button type="submit" class="search-btn">🔍</button>
+        </form>
+    </div>
 
     <div id="main-container">
         <p style="color: #fff; text-align: center;">正在连接猪猪星球...</p>
     </div>
 
+    <div class="split-section">
+        <div class="zone-card">
+            <div class="zone-title">👧 KK 的小地盘</div>
+            <div class="links-grid" id="grid-kk">
+                </div>
+        </div>
+        
+        <div class="zone-card">
+            <div class="zone-title">👦 GG 的小地盘</div>
+            <div class="links-grid" id="grid-gg">
+                </div>
+        </div>
+    </div>
     <button class="add-btn" onclick="openModal()">+</button>
 
     <div class="modal-overlay" id="addModal">
