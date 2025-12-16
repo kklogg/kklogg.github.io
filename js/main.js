@@ -7,7 +7,8 @@ const CONFIG = {
     startDate: '2022-01-01' 
 };
 
-// ================= 每日暖心文案 (Tech & Sweet) =================
+// ================= 每日暖心文案 (文科生浪漫版) =================
+// 针对：文科生 KK/康康/小康/猪猪
 const sweetSentences = [
     "小康同学，今晚的月色真美，风也温柔 🌙",
     "猪猪，你是我读过最美的一首情诗 📖",
@@ -39,7 +40,7 @@ function updateClock() {
     const hour = now.getHours();
     let greet = "你好呀 🐽";
     if (hour < 6) greet = "夜深了，早点睡 🌙";
-    else if (hour < 9) greet = "早安，打工人 ☕";
+    else if (hour < 9) greet = "早安，康康 ☕";
     else if (hour < 12) greet = "上午好，加油 🌟";
     else if (hour < 14) greet = "干饭时间到 🍚";
     else if (hour < 18) greet = "下午好，摸会鱼 🐟";
@@ -66,7 +67,6 @@ const engines = {
     'bilibili': { url: 'https://search.bilibili.com/all', name: 'keyword', placeholder: '搜索哔哩哔哩...' },
     'zhihu': { url: 'https://www.zhihu.com/search', name: 'q', placeholder: '有问题，上知乎...' },
     'xhs': { url: 'https://www.xiaohongshu.com/search_result', name: 'keyword', placeholder: '小红书，标记我的生活...' },
-    // 🔥 新增 Perplexity 配置
     'perplexity': { url: 'https://www.perplexity.ai/search', name: 'q', placeholder: 'Perplexity 智能搜索...' }
 };
 
@@ -79,14 +79,12 @@ function setSearch(type) {
     document.querySelectorAll('.search-tab').forEach(el => el.classList.remove('active'));
     const tabs = document.querySelectorAll('.search-tab');
     
-    // 硬编码索引逻辑
     if(type === 'baidu') tabs[0].classList.add('active');
     if(type === 'google') tabs[1].classList.add('active');
     if(type === 'bing') tabs[2].classList.add('active');
     if(type === 'bilibili') tabs[3].classList.add('active');
     if(type === 'zhihu') tabs[4].classList.add('active');
     if(type === 'xhs') tabs[5].classList.add('active');
-    // 🔥 新增 Perplexity 高亮 (它是第7个按钮，索引是6)
     if(type === 'perplexity') tabs[6].classList.add('active');
 }
 
@@ -111,7 +109,6 @@ function renderAll(data) {
     const gridKK = document.getElementById('grid-kk');
     const gridGG = document.getElementById('grid-gg');
     
-    // 安全检查，防止 DOM 未加载时报错
     if(mainContainer) mainContainer.innerHTML = ''; 
     if(select) select.innerHTML = ''; 
     if(gridKK) gridKK.innerHTML = ''; 
@@ -239,3 +236,4 @@ setInterval(createBackgroundItem, 500);
 window.onload = function() {
     loadLinks();
     initDailyQuote(); 
+};
