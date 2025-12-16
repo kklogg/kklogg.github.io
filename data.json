@@ -38,11 +38,6 @@
                 "icon": "🐙"
             },
             {
-                "name": "组会",
-                "url": "https://trustmlatseu.github.io/",
-                "icon": "✨"
-            },
-            {
                 "name": "26iclr整理",
                 "url": "https://ycnn7ieuz70s.feishu.cn/sheets/OUJdsKaz0h2HmMtSquJc1EaTnUh?from=space_home_recent&pre_pathname=%2Fdrive%2Fhome%2F&previous_navigation_time=1765856996166",
                 "icon": "📈"
@@ -74,6 +69,11 @@
         "title": "GG的暂存区",
         "isZone": "gg",
         "links": [
+            {
+                "name": "组会",
+                "url": "https://trustmlatseu.github.io/",
+                "icon": "✨"
+            },
             {
                 "name": "gemini论文研究",
                 "url": "https://gemini.google.com/app/99af58d81a6b9cf9",
