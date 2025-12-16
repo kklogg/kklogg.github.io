@@ -26,16 +26,6 @@
                 "name": "Gemini",
                 "url": "https://gemini.google.com/",
                 "icon": "🤖"
-            },
-            {
-                "name": "gemini复现",
-                "url": "https://gemini.google.com/app/d6f732fde9386255",
-                "icon": "✨"
-            },
-            {
-                "name": "gemini读论文",
-                "url": "https://gemini.google.com/app/473d120e84fc6f0a",
-                "icon": "✨"
             }
         ]
     },
@@ -50,11 +40,6 @@
             {
                 "name": "组会",
                 "url": "https://trustmlatseu.github.io/",
-                "icon": "✨"
-            },
-            {
-                "name": "笔航",
-                "url": "https://appopeDKlCI7439.h5.xiaoeknow.com/giftcode/0075266594470806476",
                 "icon": "✨"
             },
             {
@@ -77,7 +62,13 @@
     {
         "title": "KK的暂存区",
         "isZone": "kk",
-        "links": []
+        "links": [
+            {
+                "name": "笔航",
+                "url": "https://appopeDKlCI7439.h5.xiaoeknow.com/giftcode/0075266594470806476",
+                "icon": "✨"
+            }
+        ]
     },
     {
         "title": "GG的暂存区",
@@ -86,6 +77,16 @@
             {
                 "name": "gemini论文研究",
                 "url": "https://gemini.google.com/app/99af58d81a6b9cf9",
+                "icon": "✨"
+            },
+            {
+                "name": "gemini复现",
+                "url": "https://gemini.google.com/app/d6f732fde9386255",
+                "icon": "✨"
+            },
+            {
+                "name": "gemini读论文",
+                "url": "https://gemini.google.com/app/473d120e84fc6f0a",
                 "icon": "✨"
             }
         ]
