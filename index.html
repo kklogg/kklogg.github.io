@@ -7,7 +7,6 @@
     <style>
         /* --- 基础样式 --- */
         html {
-            /* 预留滚动条空间，防止布局跳动 */
             scrollbar-gutter: stable; 
         }
 
@@ -21,9 +20,30 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            overflow-x: hidden; /* 禁止横向滚动 */
+            overflow-x: hidden; 
         }
-        <a href="memo.html" class="nav-link-btn">📝 备忘录</a>
+
+        /* --- 🔥 修复：这里是按钮的 CSS 样式 --- */
+        .nav-link-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.4);
+            border: 2px solid white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            text-decoration: none;
+            color: white;
+            font-weight: bold;
+            transition: all 0.3s;
+            z-index: 100;
+        }
+        .nav-link-btn:hover {
+            background: white;
+            color: #ff6b81;
+            transform: translateY(-2px);
+        }
+
         /* --- 头部 --- */
         .header-section {
             text-align: center;
@@ -157,9 +177,9 @@
         .btn-cancel { background: #eee; color: #666; }
         #status-msg { text-align: center; color: #ff6b81; margin-top: 10px; font-size: 0.9em; min-height: 1.2em;}
 
-        /* --- 特效样式 (统一使用 Fixed 防止抖动) --- */
+        /* --- 特效样式 --- */
         .falling-item { 
-            position: fixed; /* 核心：固定定位，不占网页空间 */
+            position: fixed; 
             top: -50px; 
             user-select: none; 
             pointer-events: none; 
@@ -173,6 +193,8 @@
     </style>
 </head>
 <body>
+
+    <a href="memo.html" class="nav-link-btn">📝 备忘录</a>
 
     <div class="header-section">
         <div class="piggy-icon" id="piggy" onclick="triggerPigRain()">🐷</div>
@@ -249,7 +271,7 @@
             }
         }
 
-        // 渲染主函数：生成分类标题和链接
+        // 渲染主函数
         function renderAll(data) {
             const container = document.getElementById('main-container');
             const select = document.getElementById('categorySelect');
@@ -258,7 +280,6 @@
             select.innerHTML = '';    // 清空下拉菜单
 
             data.forEach((category, index) => {
-                // 1. 渲染网页上的分类区块
                 const title = document.createElement('div');
                 title.className = 'category-title';
                 title.innerText = category.title;
@@ -277,7 +298,6 @@
                 });
                 container.appendChild(grid);
 
-                // 2. 顺便填充弹窗里的下拉菜单
                 const option = document.createElement('option');
                 option.value = index; 
                 option.innerText = category.title;
@@ -321,7 +341,6 @@
                 
                 const fileData = await getRes.json();
                 
-                // 核心修改：添加到指定分类
                 const newData = JSON.parse(JSON.stringify(currentData));
                 if (newData[catIndex]) {
                     newData[catIndex].links.push({ name, url, icon });
@@ -375,13 +394,10 @@
             document.getElementById('siteUrl').value = '';
         }
 
-        // ==========================================
-        // 🌧️ 新增：点击触发“猪猪暴雨”特效
-        // ==========================================
+        // 猪猪暴雨特效
         function triggerPigRain() {
-            const count = 20; // 想要更密集可以改大这个数字
+            const count = 20; 
             for (let i = 0; i < count; i++) {
-                // 错开时间落下
                 setTimeout(() => {
                     createSingleFallingPig();
                 }, i * 50); 
@@ -390,20 +406,18 @@
 
         function createSingleFallingPig() {
             const item = document.createElement('div');
-            item.classList.add('falling-item'); // 复用 fixed 样式
+            item.classList.add('falling-item'); 
             item.innerText = '🐷'; 
             item.style.left = Math.random() * 95 + 'vw';
-            item.style.fontSize = (Math.random() * 15 + 25) + 'px'; // 稍微大一点
-            const duration = Math.random() * 4 + 3; // 3-7秒下落时间
+            item.style.fontSize = (Math.random() * 15 + 25) + 'px';
+            const duration = Math.random() * 4 + 3; 
             item.style.animationDuration = duration + 's';
             
             document.body.appendChild(item);
             setTimeout(() => item.remove(), duration * 1000);
         }
 
-        // ==========================================
-        // 🍂 原有：背景持续下落的氛围雨 (不含猪猪)
-        // ==========================================
+        // 背景雨
         const bgItems = ['❤️', '✨', '🍀', '🌸', '🍬', '☁️']; 
         function createBackgroundItem() {
             const item = document.createElement('div');
