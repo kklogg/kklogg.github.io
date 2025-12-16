@@ -13,67 +13,42 @@ body, html {
 @keyframes fall { to { transform: translateY(110vh) rotate(360deg); } }
 @keyframes popIn { from { opacity: 0; transform: scale(0.8); } to { opacity: 1; transform: scale(1); } }
 
-/* --- 头部组件 --- */
-.header-section { text-align: center; margin-top: 60px; margin-bottom: 30px; z-index: 10; position: relative; }
+/* --- 头部组件 & 时钟 --- */
+.header-section { text-align: center; margin-top: 40px; margin-bottom: 20px; z-index: 10; position: relative; }
 .piggy-icon { font-size: 80px; display: inline-block; cursor: pointer; transition: transform 0.2s; animation: bounce 2s infinite; user-select: none; }
 .piggy-icon:active { transform: scale(0.9); }
-h1 { color: #fff; margin: 10px 0; font-size: 1.8em; text-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+.clock-container { color: white; text-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-bottom: 10px; }
+.time-text { font-size: 3em; font-weight: bold; letter-spacing: 2px; line-height: 1; }
+.date-text { font-size: 1.2em; opacity: 0.9; margin-top: 5px; }
+.greeting-text { font-size: 1.1em; color: #ff6b81; background: rgba(255,255,255,0.8); padding: 5px 15px; border-radius: 20px; display: inline-block; margin-top: 10px; font-weight: bold; }
 
-/* --- 导航跳转按钮 --- */
-.nav-link-btn {
-    position: absolute; top: 20px; right: 20px;
-    background: rgba(255, 255, 255, 0.4); border: 2px solid white;
-    padding: 8px 15px; border-radius: 20px; text-decoration: none;
-    color: white; font-weight: bold; transition: all 0.3s; z-index: 100;
-}
-.nav-link-btn:hover { background: white; color: #ff6b81; transform: translateY(-2px); }
-
-/* --- 搜索框 --- */
-.search-box {
-    background: rgba(255, 255, 255, 0.9); padding: 10px 20px; border-radius: 50px;
-    box-shadow: 0 5px 15px rgba(255, 105, 135, 0.2); display: flex; align-items: center;
-    width: 90%; max-width: 500px; margin-bottom: 40px; z-index: 10; position: relative;
-}
+/* --- 搜索框 & 切换器 --- */
+.search-wrapper { width: 90%; max-width: 550px; display: flex; flex-direction: column; align-items: center; z-index: 10; margin-bottom: 40px; }
+.search-tabs { display: flex; gap: 10px; margin-bottom: 10px; }
+.search-tab { cursor: pointer; opacity: 0.7; transition: all 0.3s; background: rgba(255,255,255,0.4); padding: 5px 10px; border-radius: 10px; font-size: 20px; border: 2px solid transparent; }
+.search-tab:hover { opacity: 1; transform: translateY(-2px); }
+.search-tab.active { opacity: 1; background: white; border-color: #ff6b81; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+.search-box { background: rgba(255, 255, 255, 0.95); padding: 12px 25px; border-radius: 50px; box-shadow: 0 5px 15px rgba(255, 105, 135, 0.2); display: flex; align-items: center; width: 100%; box-sizing: border-box; transition: transform 0.3s; }
+.search-box:focus-within { transform: scale(1.02); box-shadow: 0 8px 20px rgba(255, 105, 135, 0.3); }
 .search-input { border: none; background: transparent; outline: none; font-size: 16px; flex-grow: 1; padding: 5px; color: #555; }
-.search-btn { background: none; border: none; cursor: pointer; font-size: 20px; }
+.search-btn { background: none; border: none; cursor: pointer; font-size: 20px; color: #ff6b81; }
 
 /* --- 链接卡片与分类 --- */
-#main-container { width: 90%; max-width: 800px; padding-bottom: 100px; z-index: 10; position: relative; }
-.category-title {
-    color: #fff; font-size: 1.4em; margin-top: 30px; margin-bottom: 15px;
-    padding-left: 10px; border-left: 5px solid #ff6b81; text-shadow: 0 1px 2px rgba(0,0,0,0.1);
-}
+#main-container { width: 90%; max-width: 800px; z-index: 10; position: relative; }
+.category-title { color: #fff; font-size: 1.4em; margin-top: 30px; margin-bottom: 15px; padding-left: 10px; border-left: 5px solid #ff6b81; text-shadow: 0 1px 2px rgba(0,0,0,0.1); }
 .links-grid { display: flex; flex-wrap: wrap; gap: 15px; }
-.link-card {
-    background: rgba(255, 255, 255, 0.6); backdrop-filter: blur(10px);
-    padding: 12px 20px; border-radius: 15px; text-decoration: none;
-    color: #ff6b81; font-weight: bold; display: flex; align-items: center;
-    gap: 8px; transition: all 0.3s ease; box-shadow: 0 4px 6px rgba(0,0,0,0.05); font-size: 0.95em;
-}
+.link-card { background: rgba(255, 255, 255, 0.6); backdrop-filter: blur(10px); padding: 12px 20px; border-radius: 15px; text-decoration: none; color: #ff6b81; font-weight: bold; display: flex; align-items: center; gap: 8px; transition: all 0.3s ease; box-shadow: 0 4px 6px rgba(0,0,0,0.05); font-size: 0.95em; }
 .link-card:hover { transform: translateY(-3px); background: rgba(255, 255, 255, 0.95); }
 
 /* --- 弹窗与按钮 --- */
-.add-btn {
-    position: fixed; bottom: 30px; right: 30px; width: 60px; height: 60px;
-    background: #ff6b81; color: white; border-radius: 50%; font-size: 30px; border: none;
-    box-shadow: 0 5px 15px rgba(255, 107, 129, 0.5); cursor: pointer; transition: transform 0.3s; z-index: 100;
-}
+.add-btn { position: fixed; bottom: 30px; right: 30px; width: 60px; height: 60px; background: #ff6b81; color: white; border-radius: 50%; font-size: 30px; border: none; box-shadow: 0 5px 15px rgba(255, 107, 129, 0.5); cursor: pointer; transition: transform 0.3s; z-index: 100; }
 .add-btn:hover { transform: scale(1.1) rotate(90deg); }
-.modal-overlay {
-    position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5);
-    display: none; justify-content: center; align-items: center; z-index: 200; backdrop-filter: blur(5px);
-}
-.modal {
-    background: white; padding: 30px; border-radius: 20px; width: 90%; max-width: 400px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.2); animation: popIn 0.3s ease;
-}
+.modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: none; justify-content: center; align-items: center; z-index: 200; backdrop-filter: blur(5px); }
+.modal { background: white; padding: 30px; border-radius: 20px; width: 90%; max-width: 400px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); animation: popIn 0.3s ease; }
 .modal h2 { margin-top: 0; color: #ff6b81; text-align: center; }
 .input-group { margin-bottom: 15px; }
 .input-group label { display: block; margin-bottom: 5px; color: #666; font-size: 0.9em; }
-.input-group input, .input-group select { 
-    width: 100%; padding: 10px; border: 2px solid #eee; border-radius: 10px; box-sizing: border-box; 
-    font-family: inherit; font-size: 14px;
-}
+.input-group input, .input-group select { width: 100%; padding: 10px; border: 2px solid #eee; border-radius: 10px; box-sizing: border-box; font-family: inherit; font-size: 14px; }
 .input-group input:focus, .input-group select:focus { border-color: #ff6b81; outline: none; }
 .modal-buttons { display: flex; gap: 10px; margin-top: 20px; }
 .btn { flex: 1; padding: 10px; border: none; border-radius: 10px; cursor: pointer; font-weight: bold; }
@@ -81,5 +56,20 @@ h1 { color: #fff; margin: 10px 0; font-size: 1.8em; text-shadow: 0 2px 4px rgba(
 .btn-cancel { background: #eee; color: #666; }
 #status-msg { text-align: center; color: #ff6b81; margin-top: 10px; font-size: 0.9em; min-height: 1.2em;}
 
-/* --- 下落特效 --- */
-.falling-item { position: fixed; top: -50px; user-select: none; pointer-events: none; z-index: -1; animation: fall linear forwards; }
+/* --- 🔥 核心修复：下落特效层级 --- */
+.falling-item { 
+    position: fixed; 
+    top: -50px; 
+    z-index: 99999; /* 层级调到最高，保证在最前面 */
+    pointer-events: none; /* 鼠标穿透 */
+    user-select: none; 
+    animation: fall linear forwards; 
+}
+
+/* --- 🔥 新增：KK & GG 双栏布局样式 --- */
+.split-section { width: 90%; max-width: 800px; display: flex; gap: 20px; margin-top: 40px; margin-bottom: 60px; z-index: 10; position: relative; }
+.zone-card { flex: 1; background: rgba(255, 255, 255, 0.5); backdrop-filter: blur(10px); border-radius: 20px; padding: 20px; border: 2px solid rgba(255, 255, 255, 0.8); transition: transform 0.3s; min-height: 150px; }
+.zone-card:hover { transform: translateY(-5px); background: rgba(255, 255, 255, 0.6); box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
+.zone-title { text-align: center; font-size: 1.2em; font-weight: bold; color: #ff6b81; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 2px dashed rgba(255, 107, 129, 0.3); }
+/* 手机端适配：上下排列 */
+@media (max-width: 600px) { .split-section { flex-direction: column; } }
