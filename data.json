@@ -31,6 +31,11 @@
                 "name": "gemini复现",
                 "url": "https://gemini.google.com/app/d6f732fde9386255",
                 "icon": "✨"
+            },
+            {
+                "name": "gemini读论文",
+                "url": "https://gemini.google.com/app/473d120e84fc6f0a",
+                "icon": "✨"
             }
         ]
     },
