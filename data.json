@@ -75,13 +75,19 @@
         ]
     },
     {
-        "title": "KK的暂存区", 
-        "isZone": "kk", 
+        "title": "KK的暂存区",
+        "isZone": "kk",
         "links": []
     },
     {
-        "title": "GG的暂存区", 
-        "isZone": "gg", 
-        "links": []
+        "title": "GG的暂存区",
+        "isZone": "gg",
+        "links": [
+            {
+                "name": "gemini论文研究",
+                "url": "https://gemini.google.com/app/99af58d81a6b9cf9",
+                "icon": "✨"
+            }
+        ]
     }
 ]
