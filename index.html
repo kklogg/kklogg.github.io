@@ -26,7 +26,7 @@
 
     <div class="search-wrapper">
         <div class="search-tabs">
-            <div class="search-tab" onclick="setSearch('bing')" title="Bing">🪁</div>
+            <div class="search-tab active" onclick="setSearch('bing')" title="Bing">🪁</div>
             <div class="search-tab" onclick="setSearch('perplexity')" title="Perplexity">🔮</div>
             <div class="search-tab" onclick="setSearch('google')" title="Google">🌏</div>
             <div class="search-tab" onclick="setSearch('bilibili')" title="B站">📺</div>
@@ -34,8 +34,8 @@
             <div class="search-tab" onclick="setSearch('xhs')" title="小红书">📕</div>
         </div>
         
-        <form id="search-form" action="https://www.baidu.com/s" target="_blank" class="search-box">
-            <input type="text" id="search-input" name="wd" class="search-input" placeholder="百度一下，你就知道..." autocomplete="off">
+        <form id="search-form" action="https://www.bing.com/search" target="_blank" class="search-box">
+            <input type="text" id="search-input" name="q" class="search-input" placeholder="必应搜索..." autocomplete="off">
             <button type="submit" class="search-btn">🔍</button>
         </form>
     </div>
